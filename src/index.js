@@ -16,7 +16,7 @@ dotenv.config();
 app.use(cors());
 
 //Connect to DB
-// await db.connect();
+await db.connect();
 
 //HTTP logger
 // app.use(morgan("combined"));

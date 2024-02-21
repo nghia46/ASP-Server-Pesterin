@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
-    userAvatar: {
+    type: {
       type: String,
       default: "",
     },
-    coverPicture: {
+    email: {
       type: String,
       default: "",
     },
@@ -14,27 +14,32 @@ const schema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    surName: {
+    lastName: {
       type: String,
       default: "",
     },
-    photos: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Photo",
-    },
-    email: {
+    userName: {
       type: String,
       default: "",
-    },
-    phone: {
-      type: String,
-      default: "",
-    },
-    gender: {
-      type: Boolean,
     },
     dob: {
       type: String,
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    coverPicture: {
+      type: String,
+      default: "",
+    },
+    about: {
+      type: String,
+      default: "",
+    },
+    website: {
+      type: String,
+      default: "",
     },
     password: {
       type: String,
@@ -42,28 +47,18 @@ const schema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
-      default: false,
+      default: true,
     },
-    confirmationToken: {
-      type: String,
+    roleID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
     },
-    verificationCode: {
-      code: {
-        type: String,
-      },
-      expireIn: {
-        type: String,
-      },
-    },
-    recoveryCode: {
-      type: String,
+    packageID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Package",
     },
     refreshToken: {
       type: String,
-    },
-    loginAttempts: {
-      type: Number,
-      default: 0,
     },
   },
   {
