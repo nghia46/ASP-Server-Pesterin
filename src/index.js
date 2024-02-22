@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 import route from "./routers/index.js";
 import db from "./config/database/index.js";
+import vnpayRouter from "./routers/vnpayRouter.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,8 @@ app.use(
 
 //Route
 route(app);
+
+app.use("/vnpay", vnpayRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
