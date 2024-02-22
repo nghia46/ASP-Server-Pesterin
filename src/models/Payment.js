@@ -2,36 +2,26 @@ import mongoose from 'mongoose';
 
 const vnpaySchema = new mongoose.Schema(
   {
-    orderId: {
-      type: String,
-      required: true,
-    },
     amount: {
       type: Number,
       required: true,
     },
-    bankCode: {
-      type: String,
-    },
-    orderDescription: {
+    accountId: {
       type: String,
       required: true,
-    },
-    orderType: {
-      type: String,
-      required: true,
-    },
-    language: {
-      type: String,
-      default: 'vn',
-    },
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'success', 'failed'],
-      default: 'pending',
     },
     paymentDate: {
       type: Date,
+      default: Date.now,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'success', 'failed'],
+      default: 'pending',
     },
     // Thêm các trường khác nếu cần
   },
@@ -40,6 +30,6 @@ const vnpaySchema = new mongoose.Schema(
   }
 );
 
-const VnPayTransaction = mongoose.model('VnPayTransaction', vnpaySchema);
+const payments = mongoose.model('payment', vnpaySchema);
 
-export default VnPayTransaction;
+export default payments;

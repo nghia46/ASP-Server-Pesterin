@@ -4,67 +4,61 @@ import { vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl } from '../config/d
 import dateFormat from 'dateformat'; 
 import querystring from 'qs'; 
 import crypto from 'crypto'; 
-
-
-function createDataString(params) {
-    let dataString = '';
-    Object.keys(params).forEach(key => {
-        dataString += `${key}=${params[key]}&`;
-    });
-    return dataString.slice(0, -1); // Loại bỏ dấu & cuối cùng
-}
+import Payment from '../models/Payment.js'; 
 
 export const createPaymentUrl = (req, res, next) => {
-    // Lấy thông tin từ request
-    let ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  // Lấy thông tin từ request
+  let ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
+  var tmnCode = vnp_TmnCode;
+  var secretKey = vnp_HashSecret;
+  var vnpUrl = vnp_Url;
+  var returnUrl = vnp_ReturnUrl;
 
-    var tmnCode = vnp_TmnCode;
-    var secretKey = vnp_HashSecret;
-    var vnpUrl = vnp_Url;
-    var returnUrl = vnp_ReturnUrl;
+  var date = new Date();
+  
+  var orderId = dateFormat(date, 'HHmmss');
+  var amount = req.params.amount; // Lấy giá trị amount từ params
+  var orderInfo = "Thanh toán tiền mặt hàng mới"; 
+  var orderType = "sales";
+  var locale = 'vn';
+  var currCode = 'VND';
 
-    var date = new Date();
-    
-    var orderId = dateFormat(date, 'HHmmss');
-    var amount = 200000; 
-    var orderInfo = "Thanh toán tiền mặt hàng mới"; 
-    var orderType = "sales";
-    var locale = 'vn';
-    var currCode = 'VND';
+  var accountId = req.params.accountId;
+  if (!accountId) {
+      throw new Error('accountId is required');
+  }
 
-    var newDate = new Date();
-    newDate.setDate(newDate.getDate() + 1);
-    var newCreateDate = dateFormat(newDate, 'yyyymmddHHmmss'); 
+  var newDate = new Date();
+  newDate.setDate(newDate.getDate() + 1);
+  var newCreateDate = dateFormat(newDate, 'yyyymmddHHmmss'); 
 
-    // Tạo các tham số cho VNPAY
-    var vnp_Params = {
-        vnp_Version: "2.1.0",
-        vnp_Command: "pay",
-        vnp_TmnCode: tmnCode,
-        vnp_Locale: locale,
-        vnp_CurrCode: currCode,
-        vnp_TxnRef: orderId,
-        vnp_OrderInfo: "Thanh toan cho ma GD: " + orderId,
-        vnp_OrderType: orderType,
-        vnp_Amount: amount * 100, // Chuyển đổi sang đơn vị tiền tệ của VNPAY (VNĐ -> xu)
-        vnp_ReturnUrl: returnUrl,
-        vnp_IpAddr: ipAddr,
-        vnp_CreateDate: newCreateDate
-    };
+  // Tạo các tham số cho VNPAY
+  var vnp_Params = {
+      vnp_Version: "2.1.0",
+      vnp_Command: "pay",
+      vnp_TmnCode: tmnCode,
+      vnp_Locale: locale,
+      vnp_CurrCode: currCode,
+      vnp_TxnRef: orderId,
+      vnp_OrderInfo: "Thanh toan cho ma GD: " + orderId,
+      vnp_OrderType: orderType,
+      vnp_Amount: amount * 100, // Chuyển đổi sang đơn vị tiền tệ của VNPAY (VNĐ -> xu)
+      vnp_ReturnUrl: `${returnUrl}/:${accountId}`, // Thêm accountId vào returnUrl
+      vnp_IpAddr: ipAddr,
+      vnp_CreateDate: newCreateDate
+  };
 
-   
-    
-    vnp_Params = sortObject(vnp_Params);
-    let signData = querystring.stringify(vnp_Params, { encode: false });
+  vnp_Params = sortObject(vnp_Params);
+  let signData = querystring.stringify(vnp_Params, { encode: false });
 
-    
-    let hmac = crypto.createHmac("sha512", secretKey);
-
-    let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
   vnp_Params["vnp_SecureHash"] = signed;
+  
 
   vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
+
 
   res.redirect(vnpUrl);
 };
@@ -91,6 +85,36 @@ export const vnpayIPN = (req, res, next) => {
 };
 
 export const vnpayReturn = (req, res, next) => {
-    // Xử lý kết quả trả về từ VNPAY
-    // Implement code như trong router.get('/vnpay_return') ở trên
+ 
+  const { vnp_ResponseCode, vnp_TxnRef, vnp_TransactionNo, vnp_Amount, vnp_BankCode, vnp_BankTranNo, vnp_CardType, vnp_PayDate, vnp_OrderInfo, vnp_TransactionStatus } = req.query;
+  
+  var accountId = req.params.accountId; // Lấy accountId từ URL
+  if (!accountId) {
+      throw new Error('accountId is required');
+  }
+  // Kiểm tra kết quả trả về từ VNPAY
+  if (vnp_ResponseCode === '00' && vnp_TransactionStatus === '00') {
+      // Thanh toán thành công, lưu vào MongoDB
+      const newPayment = new Payment({
+          amount: vnp_Amount,
+          accountId: accountId,
+          orderId: vnp_TxnRef,
+          paymentDate: vnp_PayDate,
+          description: vnp_OrderInfo,
+          status: 'success' 
+      });
+
+      newPayment.save()
+          .then(savedPayment => {
+              console.log('Payment saved successfully:', savedPayment);
+          })
+          .catch(error => {
+              console.error('Failed to save payment:', error);
+          });
+  } else {
+      // Xử lý trường hợp thanh toán không thành công
+      console.error('Payment failed:', { vnp_ResponseCode, vnp_TransactionNo, vnp_TransactionStatus });
+  }
+
+  // Redirect hoặc trả về thông báo tùy theo yêu cầu của bạn
 };
