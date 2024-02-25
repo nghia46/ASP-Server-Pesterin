@@ -4,38 +4,36 @@ class UserService {
   async getUserById(userId) {
     try {
       const viewUser = await User.findOne({ _id: userId });
-      if (!viewUser){
+      if (!viewUser) {
         throw new Error("User not found");
       }
       return viewUser;
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 
-  async updateUserById(userId, updateUserData){
+  async updateUserById(userId, updateUserData) {
     try {
-        const user = await User.findOne({ _id: userId });
-        if (!user){
-            throw new Error("User not found");
-        }
-        user.id = userId;
-        user.type = updateUserData.type;
-        user.email = updateUserData.email;
-        user.firstName = updateUserData.firstName; 
-        user.lastName = updateUserData.lastName;
-        user.dob = updateUserData.dob;
-        user.avatar = updateUserData.avatar;
-        user.coverPicture = updateUserData.coverPicture;
-        user.about = updateUserData.about;
-        user.website = updateUserData.website;
-        user.password = updateUserData.password;
-        user.status = updateUserData.status;
+      const user = await User.findOne({ _id: userId });
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-        await User.insertMany(userId, updateUserData);
+      console.log(updateUserData);
 
+      const model = {
+        type: updateUserData.type,
+        email: updateUserData.email,
+        firstName: updateUserData.firstName,
+        lastName: updateUserData.lastName,
+        userName: updateUserData.userName
+      };
+
+      const userUpdate = await User.updateOne({ _id: userId }, model);
+      return userUpdate;
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 }
