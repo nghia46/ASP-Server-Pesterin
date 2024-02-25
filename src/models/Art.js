@@ -6,6 +6,15 @@ const schema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    titles: {
+      type: String,
+      default: "",
+    },
+    tag: {
+      type: String,
+      default: "",
+    },
+    
   },
   {
     timestamps: true,
