@@ -4,7 +4,7 @@ class ArtServices {
   async searchArtByTag(tagArtwork) {
     try {
         const tagOfArt = await Art.findOne({ tag: tagArtwork})
-      if (!tags) {
+      if (!tagOfArt){
         throw new Error("Tag not found");
       }
       return tagOfArt;
