@@ -7,7 +7,15 @@ class AuthController {
   }
 
   // [POST] /api/v1/auth/google
-  async google(req, res, next) {}
+  async google(req, res, next) {
+    try {
+      const googleAccess = await AuthService.google(req.body);
+      res.status(200).json(googleAccess);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      next();
+    }
+  }
 
   // [POST] /api/v1/auth/signup
   async signup(req, res, next) {
