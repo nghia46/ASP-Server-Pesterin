@@ -1,8 +1,9 @@
 import { User } from "../models/User.js";
 import { generateTokens } from "../utils/generateTokens.js";
 class AuthService {
-  async login(userData) {
+  async login(loginData) {
     try {
+      let user;
     } catch (error) {
       throw error;
     }
@@ -30,7 +31,7 @@ class AuthService {
       throw error;
     }
   }
-  
+
   async signup(userData) {
     try {
       var newUser = new User(userData);

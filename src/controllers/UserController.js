@@ -1,10 +1,31 @@
-import UserService from "../services/UserServices.js";
+import UserService from "../services/UserService.js";
 
 class UserController {
   async getUserById(req, res, next) {
     try {
       const { id } = req.params;
       const user = await UserService.getUserById(id);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      next();
+    }
+  }
+
+  async updateUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { type, email, firstName, lastName, userName } = req.body;
+
+      const modelUpdate = {
+        type: type,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        userName: userName,
+      };
+      console.log(modelUpdate);
+      const user = await UserService.updateUserById(id, modelUpdate);
       res.status(200).json(user);
     } catch (error) {
       res.status(500).json({ error: error.message });
