@@ -20,14 +20,13 @@ class UserService {
         throw new Error("User not found");
       }
 
-      console.log(updateUserData);
-
       const model = {
-        type: updateUserData.type,
-        email: updateUserData.email,
         firstName: updateUserData.firstName,
         lastName: updateUserData.lastName,
-        userName: updateUserData.userName
+        about: updateUserData.about,
+        website: updateUserData.website,
+        userName: updateUserData.userName,
+        avatar: updateUserData.avatar
       };
 
       const userUpdate = await User.updateOne({ _id: userId }, model);
