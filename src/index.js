@@ -34,4 +34,5 @@ route(app);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Link: https://localhost:${PORT}/api/v1`)
 });

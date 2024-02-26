@@ -3,15 +3,23 @@ import { Art } from "../models/Art.js";
 class ArtServices {
   async searchArtByTag(tagArtwork) {
     try {
-        const tagOfArt = await Art.findOne({ tag: tagArtwork})
-      if (!tags) {
+      const tagOfArt = await Art.findOne({ tag: tagArtwork });
+      if (!tagOfArt) {
         throw new Error("Tag not found");
       }
       return tagOfArt;
     } catch (error) {
-        throw error;
+      throw error;
+    }
+  }
+  async postArt(newArt) {
+    try {
+      var newArtwork = new Art(newArt) 
+      await newArtwork.save();
+      return newArtwork;
+    } catch (error) {
+      throw error;
     }
   }
 }
-
 export default new ArtServices();

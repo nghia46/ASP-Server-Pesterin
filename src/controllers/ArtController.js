@@ -1,4 +1,5 @@
 import ArtServices from "../services/ArtServices.js";
+import { Art } from "../models/Art.js"
 
 class ArtController {
   async searchArtwork(req, res, next) {
@@ -11,6 +12,14 @@ class ArtController {
       next();
     }
   }
+  async addArtwork(req,res,next)
+  {
+    const newArt = req.body;
+    await ArtServices.postArt(newArt);
+    res.status(200).json(newArt);
+
+  }
+
 }
 
 export default new ArtController();
