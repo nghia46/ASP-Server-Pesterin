@@ -9,6 +9,18 @@ class SaveController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async removeArtFromBookmark(req, res) {
+    try {
+      const data = await saveService.removeArtFromBookmark(req.query.userID, req.query.artID);
+      res.status(200).json({ message: "Success" });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
 }
+
+
 
 export default new SaveController();

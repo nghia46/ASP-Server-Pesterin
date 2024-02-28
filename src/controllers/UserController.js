@@ -18,6 +18,57 @@ class UserController {
       const userUpdate = req.body;
       const user = await UserService.updateUserById(id, userUpdate);
       res.status(200).json(user);
+      const modelUpdate = req.body;
+
+      await UserService.updateUserById(id, modelUpdate);
+      res.status(200).json("User updated!");
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      next();
+    }
+  }
+
+  async getListUserByName(req, res) {
+    try {
+      const { userName } = req.params;
+      
+      const userList = await UserService.getListUserByName(userName);
+      res.status(200).json(userList);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getListUserByEmail(req, res) {
+    try {
+      const { email } = req.params;
+      
+      const userList = await UserService.getListUserByEmail(email);
+      res.status(200).json({ success: true, data: userList });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getListUser(req, res) {
+    try {
+      const userList = await UserService.getListUser();
+      return res.status(200).json({ success: true, data: userList });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
+
+  async updateStatusUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const updateStatus = req.body;
+
+      await UserService.updateStatus(id, updateStatus);
+
+      res.status(200).json("Status is updated");
+
     } catch (error) {
       res.status(500).json({ error: error.message });
       next();
