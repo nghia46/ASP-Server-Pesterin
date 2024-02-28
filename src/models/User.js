@@ -3,7 +3,7 @@ const schema = new mongoose.Schema(
   {
     type: {
       type: String,
-      default: "",
+      default: "Personal",
     },
     email: {
       type: String,
