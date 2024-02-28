@@ -9,9 +9,17 @@ class ArtServices {
       }
       return tagOfArt;
     } catch (error) {
-        throw error;
+      throw error;
+    }
+  }
+  async postArt(newArt) {
+    try {
+      var newArtwork = new Art(newArt) 
+      await newArtwork.save();
+      return newArtwork;
+    } catch (error) {
+      throw error;
     }
   }
 }
-
 export default new ArtServices();
