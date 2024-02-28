@@ -8,7 +8,7 @@ const schema = new mongoose.Schema(
     },
     type: {
       type: String,
-      default: "",
+      default: "any",
     },
     title: {
       type: String,
