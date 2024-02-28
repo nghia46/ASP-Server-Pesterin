@@ -24,7 +24,17 @@ class ReportService {
       throw err;
     }
   }
-
+    async getListReport() {
+      try {
+    
+        const reportList = await Report.find();
+    
+        return reportList;
+    
+      } catch (error) {
+          throw error;
+      }
+    }
   async getReportByArtId(artID) {
     try {
       const report = await Report.find({ artID: artID });
