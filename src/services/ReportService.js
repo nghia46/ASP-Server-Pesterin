@@ -16,6 +16,17 @@ class ReportService {
     }
     }
 
+    async getListReport() {
+      try {
+    
+        const reportList = await Report.find();
+    
+        return reportList;
+    
+      } catch (error) {
+          throw error;
+      }
+    }
 
 }
 export default new ReportService();
