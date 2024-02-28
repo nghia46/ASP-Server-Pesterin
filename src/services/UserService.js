@@ -13,25 +13,22 @@ class UserService {
     }
   }
 
-  async updateUserById(userId, updateUserData) {
+  async updateUserById(userId, userUpdate) {
     try {
       const user = await User.findOne({ _id: userId });
       if (!user) {
         throw new Error("User not found");
       }
 
-      console.log(updateUserData);
+      user.avatar = userUpdate.avatar;
+      user.firstName = userUpdate.firstName;
+      user.lastName = userUpdate.lastName;
+      user.userName = userUpdate.userName;
+      user.about = userUpdate.about;
+      user.website = userUpdate.website;
 
-      const model = {
-        type: updateUserData.type,
-        email: updateUserData.email,
-        firstName: updateUserData.firstName,
-        lastName: updateUserData.lastName,
-        userName: updateUserData.userName
-      };
-
-      const userUpdate = await User.updateOne({ _id: userId }, model);
-      return userUpdate;
+      await user.save();
+      return user;
     } catch (error) {
       throw error;
     }

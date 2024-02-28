@@ -1,11 +1,11 @@
-import {Save} from "../models/Save.js";
+import { Save } from "../models/Save.js";
 
 class SaveService {
-  async saveArtToBookmark( userID, artID) {
+  async saveArtToBookmark(userID, artID) {
     try {
       const save = await Save.create({ userID, artID });
       // tìm thông tin về Art khi có artId
-      
+
       return save;
     } catch (err) {
       throw err;
