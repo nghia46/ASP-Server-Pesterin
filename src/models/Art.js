@@ -2,21 +2,34 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
-    url: {
-      type: String,
-      default: "",
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     type: {
       type: String,
-      default: "any",
+      default: "image",
+    },
+    url: {
+      type: String,
+      default: "",
     },
     title: {
       type: String,
       default: "",
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+
+    description: {
+      type: String,
+      default: "",
+    },
+    link: {
+      type: String,
+      default: "",
     },
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,17 +39,21 @@ const schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reaction",
     },
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-    description: {
-      type: String,
-      default: "",
-    },
     status: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    isCheckedAds: {
+      type: Boolean,
+      default: true,
+    },
+    isCheckedComment: {
+      type: Boolean,
+      default: true,
+    },
+    isCheckedSimilar: {
+      type: Boolean,
+      default: true,
     },
   },
   {

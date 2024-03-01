@@ -6,6 +6,8 @@ import vnpayRouter from "./vnpayRouter.js";
 import FollowRouter from "./follow.js";
 import ArtRouter from "./art.js";
 import CategoryRouter from "./category.js";
+import CommentRouter from "./comment.js";
+import ReplyCommentRouter from "./replyComment.js";
 
 const route = (app) => {
   app.use("/api/v1/auth", AuthRouter);
@@ -16,6 +18,8 @@ const route = (app) => {
   app.use("/api/v1/follow", FollowRouter);
   app.use("/api/v1/art", ArtRouter);
   app.use("/api/v1/category", CategoryRouter);
+  app.use("/api/v1/comment", CommentRouter);
+  app.use("/api/v1/replyComment", ReplyCommentRouter);
 };
 
 export default route;

@@ -11,5 +11,4 @@ router.post("/updateStatusUser/:id", userController.updateStatusUser);
 router.get("/getListUser", userController.getListUser);
 router.get("/getListUserByEmail/:email", userController.getListUserByEmail);
 
-
 export default router;
