@@ -1,23 +1,25 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    artId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Art",
-    },
-    reactionType: {
-      type: String,
-      default: "none",
-    },
+const schema = new mongoose.Schema({
+  artId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Art",
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  reactions: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+      reaction: {
+        type: String,
+        default: null,
+        required: true,
+      },
+    },
+  ],
+});
 
-export const Art = mongoose.model("Reaction", schema);
+export const Reaction = mongoose.model("Reaction", schema);

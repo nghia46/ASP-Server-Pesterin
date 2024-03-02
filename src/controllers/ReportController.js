@@ -1,14 +1,15 @@
-
 import ReportService from "../services/ReportService.js";
 import reportService from "../services/ReportService.js";
 
 class ReportController {
-  async createReport(req, res) {
+  async createReport(req, res, next) {
     try {
-      const data = await reportService.createReport(req.body.userID, req.body.artID);
-      res.status(201).json({ message: "Success" });
-    } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+      const reportData = req.body;
+      const createdReport = await reportService.createReport(reportData);
+      res.status(201).json(createdReport);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      next();
     }
   }
 
@@ -30,7 +31,10 @@ class ReportController {
   }
   async updateReportStatus(req, res) {
     try {
-      const data = await reportService.updateReportStatus(req.params.reportID, req.body.reportStatus);
+      const data = await reportService.updateReportStatus(
+        req.params.reportID,
+        req.body.reportStatus
+      );
       res.status(200).json({ message: "Success" });
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error" });
