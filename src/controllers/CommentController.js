@@ -1,4 +1,4 @@
-import CommentService from "../services/CommentService.js";
+import CommentService from "../services/CommentServices.js";
 
 class CommentController {
   // [POST] /api/v1/comment/post

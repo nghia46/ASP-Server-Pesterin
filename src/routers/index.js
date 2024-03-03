@@ -8,6 +8,7 @@ import ArtRouter from "./art.js";
 import CategoryRouter from "./category.js";
 import CommentRouter from "./comment.js";
 import ReplyCommentRouter from "./replyComment.js";
+import NotificationRouter from "./notification.js";
 
 const route = (app) => {
   app.use("/api/v1/auth", AuthRouter);
@@ -20,6 +21,7 @@ const route = (app) => {
   app.use("/api/v1/category", CategoryRouter);
   app.use("/api/v1/comment", CommentRouter);
   app.use("/api/v1/replyComment", ReplyCommentRouter);
+  app.use("/api/v1/notification", NotificationRouter);
 };
 
 export default route;

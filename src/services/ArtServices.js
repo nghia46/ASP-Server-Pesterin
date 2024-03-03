@@ -1,6 +1,7 @@
 import { Art } from "../models/Art.js";
 import { Category } from "../models/Category.js";
 import { Reaction } from "../models/Reaction.js";
+import NotificationService from "./NotificationServices.js";
 
 class ArtServices {
   async searchArtByTag(tagArtwork) {
@@ -25,7 +26,13 @@ class ArtServices {
         console.warn(`No category found for tag: ${newArt.tag}`);
       }
       var newArtwork = new Art(newArt);
+
+      // Send notification to followers using NotificationService
+      await NotificationService.sendPostArtworkNotificationToFollowers(
+        newArtwork
+      );
       await newArtwork.save();
+
       return newArtwork;
     } catch (error) {
       throw error;

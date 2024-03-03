@@ -1,4 +1,4 @@
-import saveService from "../services/SaveService.js";
+import saveService from "../services/SaveServices.js";
 
 class SaveController {
   async saveArtToBookmark(req, res) {

@@ -1,5 +1,4 @@
-import ReportService from "../services/ReportService.js";
-import reportService from "../services/ReportService.js";
+import reportService from "../services/ReportServices.js";
 
 class ReportController {
   async createReport(req, res, next) {
@@ -15,7 +14,7 @@ class ReportController {
 
   async getListReport(req, res) {
     try {
-      const reportList = await ReportService.getListReport();
+      const reportList = await reportService.getListReport();
       return res.status(200).json({ success: true, data: reportList });
     } catch (error) {
       res.status(500).json({ error: error.message });

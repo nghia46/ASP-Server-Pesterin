@@ -11,6 +11,7 @@ class ArtController {
       next();
     }
   }
+
   async addArtwork(req, res, next) {
     try {
       const newArt = req.body;

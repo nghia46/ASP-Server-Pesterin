@@ -1,4 +1,4 @@
-import FollowService from "../services/FollowService.js";
+import FollowService from "../services/FollowServices.js";
 
 class FollowController {
   async create(req, res) {
