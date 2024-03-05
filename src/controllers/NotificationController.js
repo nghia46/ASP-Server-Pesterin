@@ -3,9 +3,9 @@ import notificationService from "../services/NotificationServices.js";
 class NotificationController {
   async getNotificationsByUserId(req, res) {
     try {
-      const { followerId } = req.params;
+      const { receiverId } = req.params;
       const notifications = await notificationService.getNotificationsByUserId(
-        followerId
+        receiverId
       );
       res.status(200).json(notifications);
     } catch (err) {
@@ -15,9 +15,9 @@ class NotificationController {
 
   async getUnreadNotifications(req, res) {
     try {
-      const { followerId } = req.params;
+      const { receiverId } = req.params;
       const notifications = await notificationService.getUnreadNotifications(
-        followerId
+        receiverId
       );
       res.status(200).json(notifications);
     } catch (err) {
@@ -27,9 +27,9 @@ class NotificationController {
 
   async updateAllNotificationsStatus(req, res) {
     try {
-      const { followerId } = req.params;
+      const { receiverId } = req.params;
       const notifications =
-        await notificationService.updateAllNotificationsStatus(followerId);
+        await notificationService.updateAllNotificationsStatus(receiverId);
       res.status(200).json(notifications);
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error" });
@@ -38,9 +38,9 @@ class NotificationController {
 
   async updateNotificationStatusById(req, res) {
     try {
-      const { id, followerId } = req.params;
+      const { id, receiverId } = req.params;
       const notifications =
-        await notificationService.updateNotificationStatusById(id, followerId);
+        await notificationService.updateNotificationStatusById(id, receiverId);
       res.status(200).json(notifications);
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error" });

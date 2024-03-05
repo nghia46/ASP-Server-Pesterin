@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 const schema = new mongoose.Schema(
   {
-    followerId: {
+    receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    posterId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    posterAvatar: {
+    senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    senderAvatar: {
       type: String,
     },
     type: {

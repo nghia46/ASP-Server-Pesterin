@@ -1,6 +1,6 @@
 import { Comment } from "../models/Comment.js";
 import { ReplyComment } from "../models/ReplyComment.js";
-
+import NotificationServices from "./NotificationServices.js";
 class ReplyCommentService {
   async postReplyComment(replyCommentData) {
     try {
@@ -20,6 +20,12 @@ class ReplyCommentService {
             },
           ],
         });
+        
+        //Send notification
+        await NotificationServices.sendReplyCommentNotificationToFollowers(
+          replyCommentData
+        );
+
         //Find comment inside comments in Comment Collection
         const commentsArray = await Comment.find({});
         for (const comments of commentsArray) {
@@ -50,6 +56,10 @@ class ReplyCommentService {
         };
 
         existingReplyComments.replyComments.push(newReplyComment);
+        //Send notification
+        await NotificationServices.sendReplyCommentNotificationToFollowers(
+          replyCommentData
+        );
         await existingReplyComments.save();
       }
 

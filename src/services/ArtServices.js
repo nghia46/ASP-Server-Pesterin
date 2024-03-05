@@ -70,7 +70,6 @@ class ArtServices {
 
   async addReaction(artId, userId, reaction) {
     try {
-      // Validate reaction
       if (
         reaction !== null &&
         !["Love", "Haha", "Thank", "GoodIdea", "Wow"].includes(reaction)
@@ -107,6 +106,13 @@ class ArtServices {
       } else if (reaction !== null) {
         // Add a new interaction if the reaction is not null
         reactions.reactions.push({ userId, reaction });
+
+        //Send notification
+        await NotificationService.sendReactionNotificationToFollowers(
+          artId,
+          userId,
+          reaction
+        );
       }
 
       await reactions.save();

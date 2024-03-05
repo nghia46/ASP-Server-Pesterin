@@ -14,6 +14,10 @@ const schema = new mongoose.Schema(
       type: String,
       default: "image",
     },
+    access: {
+      type: String,
+      default: "public",
+    },
     url: {
       type: String,
       default: "",

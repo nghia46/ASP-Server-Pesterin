@@ -1,6 +1,6 @@
 import { Art } from "../models/Art.js";
 import { Comment } from "../models/Comment.js";
-
+import NotificationServices from "./NotificationServices.js";
 class CommentService {
   async postComment(commentData) {
     try {
@@ -19,6 +19,9 @@ class CommentService {
             },
           ],
         });
+        await NotificationServices.sendCommentNotificationToFollowers(
+          commentData
+        );
         const art = await Art.findById(artId);
         if (!art) {
           throw new Error("Art not found when updating comments.");
@@ -33,6 +36,9 @@ class CommentService {
           replies: null,
         };
         existingComments.comments.push(newComment);
+        await NotificationServices.sendCommentNotificationToFollowers(
+          commentData
+        );
         await existingComments.save();
       }
 

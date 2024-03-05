@@ -1,5 +1,7 @@
 import { User } from "../models/User.js";
+import { Art } from "../models/Art.js";
 import { Follow } from "../models/Follow.js";
+import { Comment } from "../models/Comment.js";
 import { Notification } from "../models/Notification.js";
 
 class NotificationService {
@@ -16,9 +18,9 @@ class NotificationService {
       followers.forEach(async (follower) => {
         const followerUser = await User.findById(follower.followerId);
         const notificationData = {
-          followerId: followerUser._id,
-          posterId: user._id,
-          posterAvatar: user.avatar,
+          receiverId: followerUser._id,
+          senderId: user._id,
+          senderAvatar: user.avatar,
           type: "new_art_posted",
           content: `<span style="font-weight: 600">${user.userName}</span> added new Artwork: <span style="font-weight: 600">${newArt.title}</span>`,
           hyperLink: `/pin/${newArt._id}`,
@@ -27,6 +29,114 @@ class NotificationService {
         // Save notification to Notification table
         await this.saveNotification(notificationData);
       });
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendFollowNotificationToFollowers(followerId, followingId) {
+    try {
+      // Fetch the user information based on userId
+      const user = await User.findById(followingId);
+
+      if (!user) {
+        console.error("User not found");
+        return;
+      }
+      const follower = await Follow.findOne({
+        followerId: followerId,
+        followingId: followingId,
+      });
+      const followerUser = await User.findById(follower.followerId);
+      const notificationData = {
+        receiverId: user._id,
+        senderId: followerUser._id,
+        senderAvatar: followerUser.avatar,
+        type: "new_follow",
+        content: `<span style="font-weight: 600">${followerUser.userName}</span> started following you`,
+        hyperLink: `/creator/${followerUser._id}`,
+      };
+      // // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendCommentNotificationToFollowers(commentData) {
+    try {
+      const art = await Art.findById(commentData.artId);
+      const creator = await User.findById(art.userId);
+      if (!creator) {
+        console.error("Creator not found");
+        return;
+      }
+      const sender = await User.findById(commentData.author.userId);
+      const notificationData = {
+        receiverId: creator._id,
+        senderId: sender._id,
+        senderAvatar: sender.avatar,
+        type: "new_comment",
+        content: `<span style="font-weight: 600">${sender.userName}</span> commented on your post: <span style="font-weight: 600">${art.title}</span>`,
+        hyperLink: `/pin/${art._id}`,
+      };
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendReplyCommentNotificationToFollowers(replyCommentData) {
+    try {
+      const comments = await Comment.findOne({
+        "comments._id": replyCommentData.commentId,
+      });
+      const comment = comments.comments[0];
+      const art = await Art.findById(comments.artId);
+      const receiver = await User.findById(comment.author.userId);
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const sender = await User.findById(replyCommentData.author.userId);
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: sender._id,
+        senderAvatar: sender.avatar,
+        type: "new_reply_comment",
+        content: `<span style="font-weight: 600">${sender.userName}</span> has responded to your post: <span style="font-weight: 600">${art.title}</span>`,
+        hyperLink: `/pin/${art._id}`,
+      };
+      // // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendReactionNotificationToFollowers(artId, userId, reaction) {
+    try {
+      const art = await Art.findById(artId);
+      const receiver = await User.findById(art.userId);
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const sender = await User.findById(userId);
+      if (receiver._id.toString() !== sender._id.toString()) {
+        const notificationData = {
+          receiverId: receiver._id,
+          senderId: sender._id,
+          senderAvatar: sender.avatar,
+          type: `new_react_${reaction}`,
+          content: `<span style="font-weight: 600">${sender.userName}</span> expressed his feelings about your post: <span style="font-weight: 600">${art.title}</span>`,
+          hyperLink: `/pin/${art._id}`,
+        };
+
+        // Save notification to Notification table
+        await this.saveNotification(notificationData);
+      }
     } catch (error) {
       console.error("Error sending notification to followers:", error);
     }
@@ -41,10 +151,10 @@ class NotificationService {
     }
   }
 
-  async getNotificationsByUserId(followerId) {
+  async getNotificationsByUserId(receiverId) {
     try {
       const notifications = await Notification.find({
-        followerId: followerId,
+        receiverId: receiverId,
       }).sort({ createdAt: -1 });
       return notifications;
     } catch (error) {
@@ -52,10 +162,10 @@ class NotificationService {
     }
   }
 
-  async getUnreadNotifications(followerId) {
+  async getUnreadNotifications(receiverId) {
     try {
       const notifications = Notification.find({
-        followerId: followerId,
+        receiverId: receiverId,
         status: false,
       });
       return notifications;
@@ -64,16 +174,16 @@ class NotificationService {
     }
   }
 
-  async updateAllNotificationsStatus(followerId) {
+  async updateAllNotificationsStatus(receiverId) {
     try {
       await Notification.updateMany(
-        { followerId: followerId },
+        { receiverId: receiverId },
         { $set: { status: true } },
         { new: true }
       );
 
       const updatedNotifications = await Notification.find({
-        followerId: followerId,
+        receiverId: receiverId,
       });
 
       return updatedNotifications;
@@ -82,7 +192,7 @@ class NotificationService {
     }
   }
 
-  async updateNotificationStatusById(id, followerId) {
+  async updateNotificationStatusById(id, receiverId) {
     try {
       const updatedNotification = await Notification.findByIdAndUpdate(
         id,
@@ -95,7 +205,7 @@ class NotificationService {
       }
 
       const updatedNotifications = await Notification.find({
-        followerId: followerId,
+        receiverId: receiverId,
       });
 
       return updatedNotifications;

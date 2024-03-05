@@ -4,21 +4,21 @@ const router = express.Router();
 import notificationController from "../controllers/NotificationController.js";
 
 router.get(
-  "/getNotificationsByUserId/:followerId",
+  "/getNotificationsByUserId/:receiverId",
   notificationController.getNotificationsByUserId
 );
 router.get(
-  "/getUnreadNotifications/:followerId",
+  "/getUnreadNotifications/:receiverId",
   notificationController.getUnreadNotifications
 );
 
 router.put(
-  "/updateAllNotificationsStatus/:followerId",
+  "/updateAllNotificationsStatus/:receiverId",
   notificationController.updateAllNotificationsStatus
 );
 
 router.put(
-  "/updateNotificationStatusById/:id/:followerId",
+  "/updateNotificationStatusById/:id/:receiverId",
   notificationController.updateNotificationStatusById
 );
 
