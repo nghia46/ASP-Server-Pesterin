@@ -12,6 +12,6 @@ router.get(
   artController.getReactionByUserIdAndArtId
 );
 router.get("/get-reaction-length/:artId", artController.getReactionLength);
-
-router.get("/searchArtwork/:tag", artController.searchArtwork);
+router.get("/searchArtwork/:search", artController.searchArtwork);
+router.get("/getArtworkByCategoryId/:categoryId", artController.getArtworkByCategoryId);
 export default router;

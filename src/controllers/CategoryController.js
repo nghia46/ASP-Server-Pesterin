@@ -12,6 +12,17 @@ class CategoryController {
     }
   }
 
+  async getCategoryById(req, res, next) {
+    try {
+      const { categoryId } = req.params;
+      const categories = await CategoryServices.getCategoryById(categoryId);
+      res.status(200).json(categories);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      next();
+    }
+  }
+
   async searchCategoryByName(req, res, next) {
     try {
       const { name } = req.params;

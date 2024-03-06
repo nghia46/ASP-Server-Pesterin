@@ -28,6 +28,27 @@ class CategoryService {
       throw new Error(`Error searching category: ${error.message}`);
     }
   }
+
+  async getCategoryNames() {
+    try {
+      const categories = await Category.find({}, "name");
+      return categories.map((category) => ({
+        categoryName: category.name,
+        id: category._id,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getCategoryById(categoryId) {
+    try {
+      const categories = await Category.find({ _id: categoryId });
+      return categories;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new CategoryService();

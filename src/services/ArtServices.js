@@ -1,16 +1,68 @@
 import { Art } from "../models/Art.js";
 import { Category } from "../models/Category.js";
 import { Reaction } from "../models/Reaction.js";
+import { User } from "../models/User.js";
+import UserServices from "./UserServices.js";
+import CategoryServices from "./CategoryServices.js";
 import NotificationService from "./NotificationServices.js";
 
 class ArtServices {
-  async searchArtByTag(tagArtwork) {
+  async search(search) {
     try {
-      const tagOfArt = await Art.findOne({ tag: tagArtwork });
-      if (!tagOfArt) {
-        throw new Error("Tag not found");
-      }
-      return tagOfArt;
+      const keyword = search.toLowerCase();
+      // Fetch category names and user names concurrently
+      // const [allCategories, allUsers] = await Promise.all([
+      //   CategoryServices.getCategoryNames(),
+      //   UserServices.getUserNames(),
+      // ]);
+      // const matchingCategories = allCategories
+      //   .filter((category) =>
+      //     category.categoryName.toLowerCase().includes(keyword.toLowerCase())
+      //   )
+      //   .map((category) => ({
+      //     id: category.id,
+      //     name: category.categoryName,
+      //     type: "category",
+      //   }));
+
+      // const matchingUsers = allUsers
+      //   .filter((user) =>
+      //     user.userName.toLowerCase().includes(keyword.toLowerCase())
+      //   )
+      //   .map((user) => ({
+      //     id: user.id,
+      //     name: user.userName,
+      //     avatar: user.avatar,
+      //     type: "user",
+      //   }));
+      // const finalSearchResults = matchingCategories.concat(matchingUsers);
+      // return finalSearchResults;
+      // Perform text search for categories and users
+      const keywordRegex = new RegExp(keyword, "i");
+      // Fetch category names and user names concurrently
+      const [matchingCategories, matchingUsers] = await Promise.all([
+        Category.find({ name: { $regex: keywordRegex } })
+          .limit(10)
+          .lean(),
+        User.find({ userName: { $regex: keywordRegex } })
+          .limit(10)
+          .lean(),
+      ]);
+
+      const mappedCategories = matchingCategories.map((category) => ({
+        id: category._id,
+        name: category.name,
+        type: "category",
+      }));
+
+      const mappedUsers = matchingUsers.map((user) => ({
+        id: user._id,
+        name: user.userName,
+        avatar: user.avatar,
+        type: "user",
+      }));
+      const finalSearchResults = mappedUsers.concat(mappedCategories);
+      return finalSearchResults;
     } catch (error) {
       throw error;
     }
@@ -22,16 +74,16 @@ class ArtServices {
 
       if (category) {
         newArt.categoryId = category._id;
+        var newArtwork = new Art(newArt);
+
+        // Send notification to followers using NotificationService
+        await NotificationService.sendPostArtworkNotificationToFollowers(
+          newArtwork
+        );
+        await newArtwork.save();
       } else {
         console.warn(`No category found for tag: ${newArt.tag}`);
       }
-      var newArtwork = new Art(newArt);
-
-      // Send notification to followers using NotificationService
-      await NotificationService.sendPostArtworkNotificationToFollowers(
-        newArtwork
-      );
-      await newArtwork.save();
 
       return newArtwork;
     } catch (error) {
@@ -153,6 +205,15 @@ class ArtServices {
       }
 
       return reactions.reactions.length;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getArtworkByCategoryId(categoryId) {
+    try {
+      const arts = await Art.find({ categoryId: categoryId });
+      return arts;
     } catch (error) {
       throw error;
     }

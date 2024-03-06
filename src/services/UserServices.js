@@ -35,59 +35,63 @@ class UserService {
 
   async getListUserByName(userName) {
     try {
-
-      const regex = new RegExp(userName, 'i');
+      const regex = new RegExp(userName, "i");
       const userList = await User.find({ userName: regex });
 
       return userList;
-
     } catch (error) {
-        throw error;
+      throw error;
     }
-}
-
-async getListUserByEmail(email) {
-  try {
-    
-    const userList = await User.find({ email });
-
-    return userList;
-
-  } catch (error) {
-      throw error;
   }
-}
 
-async getListUser() {
-  try {
+  async getListUserByEmail(email) {
+    try {
+      const userList = await User.find({ email });
 
-    const userList = await User.find();
-
-    return userList;
-
-  } catch (error) {
+      return userList;
+    } catch (error) {
       throw error;
-  }
-}
-
-async updateStatus(userId, updateUser) {
-  try {
-    const user = await User.findOne({ _id: userId });
-    if (!user) {
-      throw new Error("User not found");
     }
-
-    user.status = updateUser.status;
-
-    const userUpdate = await user.save();
-    return userUpdate;
-    
-  } catch (error) {
-      throw error;
   }
-}
 
-  
+  async getListUser() {
+    try {
+      const userList = await User.find();
+
+      return userList;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserNames() {
+    try {
+      const users = await User.find({}, "userName id avatar");
+      return users.map((user) => ({
+        userName: user.userName,
+        id: user._id,
+        avatar: user.avatar,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateStatus(userId, updateUser) {
+    try {
+      const user = await User.findOne({ _id: userId });
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      user.status = updateUser.status;
+
+      const userUpdate = await user.save();
+      return userUpdate;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new UserService();

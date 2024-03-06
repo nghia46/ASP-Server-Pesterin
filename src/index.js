@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 import route from "./routers/index.js";
 import db from "./config/database/index.js";
@@ -35,6 +36,16 @@ app.use(
     extended: true,
   })
 );
+
+const vnpayProxy = createProxyMiddleware({
+  target: "https://sandbox.vnpayment.vn",
+  changeOrigin: true,
+  pathRewrite: {
+    "^/api/v1/vnpay": "", // Remove the initial part of the path
+  },
+});
+
+app.use("/api/v1/vnpay", vnpayProxy);
 
 // // Connection and disconnection events
 // io.on("connection", (socket) => {
