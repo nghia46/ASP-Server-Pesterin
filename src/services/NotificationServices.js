@@ -142,6 +142,56 @@ class NotificationService {
     }
   }
 
+  async sendPaymentPackageNotification(userId, type, amount) {
+    try {
+      const receiver = await User.findById(userId);
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: null,
+        senderAvatar:
+          "https://firebasestorage.googleapis.com/v0/b/singular-ally-415014.appspot.com/o/logo.png?alt=media&token=106100e5-1115-4286-9070-b211d735f197",
+        type: `new_payment_package`,
+        content: `<span style="font-weight: 600">Thanks a bunch!</span> Your purchase of <span style="font-weight: 600">${type} for ${
+          amount / 1000
+        } VND</span> is confirmed. We're gearing up to ship it your way. Appreciate you choosing Pesterin!`,
+        hyperLink: "",
+      };
+
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendFreePackageNotification(userId) {
+    try {
+      const receiver = await User.findById(userId);
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: null,
+        senderAvatar:
+          "https://firebasestorage.googleapis.com/v0/b/singular-ally-415014.appspot.com/o/logo.png?alt=media&token=106100e5-1115-4286-9070-b211d735f197",
+        type: `new_free_package`,
+        content: `<span style="font-weight: 600">Thanks a bunch!</span> Your purchase of <span style="font-weight: 600">Free Trial</span> is confirmed. We're gearing up to ship it your way. Appreciate you choosing Pesterin!`,
+        hyperLink: "",
+      };
+
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
   async saveNotification(notificationData) {
     try {
       const notification = new Notification(notificationData);
@@ -184,7 +234,7 @@ class NotificationService {
 
       const updatedNotifications = await Notification.find({
         receiverId: receiverId,
-      });
+      }).sort({ createdAt: -1 });
 
       return updatedNotifications;
     } catch (error) {
@@ -206,7 +256,7 @@ class NotificationService {
 
       const updatedNotifications = await Notification.find({
         receiverId: receiverId,
-      });
+      }).sort({ createdAt: -1 });
 
       return updatedNotifications;
     } catch (error) {

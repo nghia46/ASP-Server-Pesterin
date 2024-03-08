@@ -4,17 +4,16 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
-import { createProxyMiddleware } from "http-proxy-middleware";
 
 import route from "./routers/index.js";
 import db from "./config/database/index.js";
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
+// const io = new Server(server, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//   },
+// });
 const PORT = process.env.PORT || 5000;
 
 //Config dotenv
@@ -36,16 +35,6 @@ app.use(
     extended: true,
   })
 );
-
-const vnpayProxy = createProxyMiddleware({
-  target: "https://sandbox.vnpayment.vn",
-  changeOrigin: true,
-  pathRewrite: {
-    "^/api/v1/vnpay": "", // Remove the initial part of the path
-  },
-});
-
-app.use("/api/v1/vnpay", vnpayProxy);
 
 // // Connection and disconnection events
 // io.on("connection", (socket) => {

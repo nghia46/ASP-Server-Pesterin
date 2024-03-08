@@ -52,7 +52,7 @@ const schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Save",
     },
-    packageID: {
+    packageId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Package",
     },

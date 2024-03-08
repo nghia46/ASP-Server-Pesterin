@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const saveSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,4 +20,4 @@ const saveSchema = new mongoose.Schema(
   }
 );
 
-export const Save = mongoose.model("Save", saveSchema);
+export const Save = mongoose.model("Save", schema);

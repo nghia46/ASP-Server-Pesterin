@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const reportSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,4 +32,4 @@ const reportSchema = new mongoose.Schema(
   }
 );
 
-export const Report = mongoose.model("Report", reportSchema);
+export const Report = mongoose.model("Report", schema);
