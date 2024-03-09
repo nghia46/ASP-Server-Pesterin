@@ -1,26 +1,25 @@
 import { Save } from "../models/Save.js";
 import { User } from "../models/User.js";
+import { Feature } from "../models/Feature.js";
 class SaveService {
   async saveArtToBookmark(userID, artID) {
     try {
       let save = await Save.findOne({ userID });
-
+      let feature = await Feature.findOne({ userId: userID });
       if (!save) {
-        // If there's no existing Save document for the user, create a new one
         save = new Save({
           userID,
           arts: [{ artID }],
         });
-        await save.save();
-
-        // Update the User model with the saveID
         await User.findByIdAndUpdate(userID, { saveId: save._id });
       } else {
-        // If there's an existing Save document, add the new artID to the arts array
         save.arts.push({ artID });
-        await save.save();
       }
-
+      if (feature && feature.countSave > 0) {
+        feature.countSave -= 1;
+        await feature.save();
+      }
+      await save.save();
       return save;
     } catch (error) {
       console.error("Error saving artwork:", error);

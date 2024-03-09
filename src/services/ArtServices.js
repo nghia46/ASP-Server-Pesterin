@@ -2,6 +2,7 @@ import { Art } from "../models/Art.js";
 import { Category } from "../models/Category.js";
 import { Reaction } from "../models/Reaction.js";
 import { User } from "../models/User.js";
+import { Feature } from "../models/Feature.js";
 import UserServices from "./UserServices.js";
 import CategoryServices from "./CategoryServices.js";
 import NotificationService from "./NotificationServices.js";
@@ -70,21 +71,33 @@ class ArtServices {
 
   async postArt(newArt) {
     try {
-      const category = await Category.findOne({ name: newArt.tag });
+      const [category, feature] = await Promise.all([
+        Category.findOne({ name: newArt.tag }),
+        Feature.findOne({ userId: newArt.userId }),
+      ]);
 
-      if (category) {
-        newArt.categoryId = category._id;
-        var newArtwork = new Art(newArt);
-
-        // Send notification to followers using NotificationService
-        await NotificationService.sendPostArtworkNotificationToFollowers(
-          newArtwork
-        );
-        await newArtwork.save();
-      } else {
-        console.warn(`No category found for tag: ${newArt.tag}`);
+      if (!category) {
+        throw new Error(`No category found for tag: ${newArt.tag}`);
       }
 
+      newArt.categoryId = category._id;
+
+      if (newArt.access === "private" && feature.countPostPrivate > 0) {
+        feature.countPostPrivate -= 1;
+      }
+
+      if (newArt.isCheckedAds && feature.countAds > 0) {
+        feature.countAds -= 1;
+      }
+
+      await feature.save();
+
+      const newArtwork = new Art(newArt);
+      // Send notification to followers using NotificationService
+      await NotificationService.sendPostArtworkNotificationToFollowers(
+        newArtwork
+      );
+      await newArtwork.save();
       return newArtwork;
     } catch (error) {
       throw error;
@@ -213,7 +226,8 @@ class ArtServices {
   async getArtworkByCategoryId(categoryId) {
     try {
       const arts = await Art.find({ categoryId: categoryId });
-      return arts;
+      const sortedArtworks = arts.sort((a, b) => b.createdAt - a.createdAt);
+      return sortedArtworks;
     } catch (error) {
       throw error;
     }

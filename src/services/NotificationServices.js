@@ -192,6 +192,32 @@ class NotificationService {
     }
   }
 
+  async sendPaymentUpgradePackageNotification(userId, type, amount) {
+    try {
+      const receiver = await User.findById(userId);
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: null,
+        senderAvatar:
+          "https://firebasestorage.googleapis.com/v0/b/singular-ally-415014.appspot.com/o/logo.png?alt=media&token=106100e5-1115-4286-9070-b211d735f197",
+        type: `new_payment_package`,
+        content: `<span style="font-weight: 600">Upgrade successful!</span> Explore advanced features with our <span style="font-weight: 600">${type} package for ${
+          amount / 1000
+        } VND</span> . Thank you for choosing Pesterin!`,
+        hyperLink: "",
+      };
+
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
   async saveNotification(notificationData) {
     try {
       const notification = new Notification(notificationData);

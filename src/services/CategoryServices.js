@@ -18,9 +18,10 @@ class CategoryService {
 
   async searchCategoryByName(partialName) {
     try {
-      const categories = await Category.find({
-        name: { $regex: new RegExp(partialName, "i") },
-      });
+      const categories = await Category.find(
+        { name: { $regex: new RegExp(partialName, "i") } },
+        { name: 1, _id: 0 }
+      );
       const response = categories.map((category) => category.name);
 
       return response;
