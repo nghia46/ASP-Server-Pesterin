@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
-    followerId: {
+    name: {
       type: String,
       default: "",
     },
-    followingId: {
+    description: {
       type: String,
       default: "",
     },
@@ -16,4 +16,4 @@ const schema = new mongoose.Schema(
   }
 );
 
-export const Follow = mongoose.model("Follow", schema);
+export const Category = mongoose.model("Category", schema);

@@ -1,30 +1,29 @@
 import mongoose from "mongoose";
 const schema = new mongoose.Schema(
   {
-    userID: {
+    receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: 0,
     },
-    artID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Art",
+    senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    senderAvatar: {
+      type: String,
     },
-    reportTitle: {
+    type: {
       type: String,
       default: "",
     },
-    reportDescription: {
+    content: {
       type: String,
       default: "",
     },
-    reportType: {
+    hyperLink: {
       type: String,
       default: "",
     },
-    reportStatus: {
+    status: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   {
@@ -32,4 +31,4 @@ const schema = new mongoose.Schema(
   }
 );
 
-export const Report = mongoose.model("Report", schema);
+export const Notification = mongoose.model("Notification", schema);

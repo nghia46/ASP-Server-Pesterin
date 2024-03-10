@@ -2,19 +2,63 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
     type: {
       type: String,
-      default: "",
+      default: "image",
     },
-    titles: {
+    access: {
+      type: String,
+      default: "public",
+    },
+    url: {
       type: String,
       default: "",
     },
-    tag: {
+    title: {
       type: String,
       default: "",
     },
-    
+
+    description: {
+      type: String,
+      default: "",
+    },
+    link: {
+      type: String,
+      default: "",
+    },
+    commentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+    reactionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reaction",
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    isCheckedAds: {
+      type: Boolean,
+      default: true,
+    },
+    isCheckedComment: {
+      type: Boolean,
+      default: true,
+    },
+    isCheckedSimilar: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

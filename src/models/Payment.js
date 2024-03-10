@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const vnpaySchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     amount: {
       type: Number,
@@ -20,16 +20,13 @@ const vnpaySchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'success', 'failed'],
-      default: 'pending',
+      enum: ["pending", "success", "failed"],
+      default: "pending",
     },
-    // Thêm các trường khác nếu cần
   },
   {
     timestamps: true,
   }
 );
 
-const payments = mongoose.model('payment', vnpaySchema);
-
-export default payments;
+export const Payment = mongoose.model("Payment", schema);

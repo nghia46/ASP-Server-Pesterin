@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const schema = new mongoose.Schema(
   {
     type: {
@@ -49,11 +48,11 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    roleID: {
+    saveId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Role",
+      ref: "Save",
     },
-    packageID: {
+    packageId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Package",
     },
