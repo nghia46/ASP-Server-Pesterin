@@ -38,6 +38,7 @@ export const createPaymentUrl = (req, res, next) => {
       vnp_Version: "2.1.0",
       vnp_Command: "pay",
       vnp_TmnCode: tmnCode,
+      vnp_BankCode: "NCB",
       vnp_Locale: locale,
       vnp_CurrCode: currCode,
       vnp_TxnRef: orderId,
