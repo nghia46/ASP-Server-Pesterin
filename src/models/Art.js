@@ -35,6 +35,10 @@ const schema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    createdAtArt: {
+      type: Date,
+      default: "",
+    },
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
@@ -58,6 +62,10 @@ const schema = new mongoose.Schema(
     isCheckedSimilar: {
       type: Boolean,
       default: true,
+    },
+    isTop : {
+      type: Boolean,
+      default: false,
     },
   },
   {
