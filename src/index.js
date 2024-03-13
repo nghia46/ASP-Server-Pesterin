@@ -7,13 +7,15 @@ import { Server } from "socket.io";
 
 import route from "./routers/index.js";
 import db from "./config/database/index.js";
+import { addUser, removeUser, getUser, users } from "./utils/socketUtils.js";
+
 const app = express();
 const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:3000",
-//   },
-// });
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
 const PORT = process.env.PORT || 5000;
 
 //Config dotenv
@@ -36,22 +38,32 @@ app.use(
   })
 );
 
-// // Connection and disconnection events
-// io.on("connection", (socket) => {
-//   console.log(`A user connected ${socket.id}`);
-//   socket.on("disconnect", () => {
-//     console.log(`User ${socket.id} disconnected`);
-//   });
-// });
+io.on("connection", (socket) => {
+  // console.log(`A user connected`);
 
-// //SocketIO
-// app.set("socketio", io);
+  ///Take userId and socketId from user
+  socket.on("addUser", (userId) => {
+    addUser(userId, socket.id);
+    io.emit("getUsers", users);
+  });
 
-// // Create a middleware to add the io object to each request
-// app.use((req, res, next) => {
-//   req.io = io;
-//   next();
-// });
+  //Send message
+  socket.on("sendMessage", ({ senderId, receiverId, message }) => {
+    const user = getUser(receiverId);
+    if (user && user.socketId) {
+      io.to(user.socketId).emit("getMessage", {
+        senderId,
+        message,
+      });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    // console.log(`User disconnected`);
+    removeUser(socket.id);
+    io.emit("getUsers", users);
+  });
+});
 
 //Route
 route(app);

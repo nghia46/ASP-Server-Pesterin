@@ -10,6 +10,8 @@ import CommentRouter from "./comment.js";
 import ReplyCommentRouter from "./replyComment.js";
 import NotificationRouter from "./notification.js";
 import PackageRouter from "./package.js";
+import ConversationRouter from "./conversation.js";
+import MessageRouter from "./message.js";
 
 const route = (app) => {
   app.use("/api/v1/auth", AuthRouter);
@@ -24,6 +26,8 @@ const route = (app) => {
   app.use("/api/v1/replyComment", ReplyCommentRouter);
   app.use("/api/v1/notification", NotificationRouter);
   app.use("/api/v1/package", PackageRouter);
+  app.use("/api/v1/conversation", ConversationRouter);
+  app.use("/api/v1/message", MessageRouter);
 };
 
 export default route;
