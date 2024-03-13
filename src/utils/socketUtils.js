@@ -1,12 +1,17 @@
-// socketUtils.js
-const userSocketIdMap = new Map();
+let users = [];
 
-const storeSocketId = (userId, socketId) => {
-  userSocketIdMap.set(userId, socketId);
+const addUser = (userId, socketId) => {
+  if (userId && !users.some((user) => user.userId === userId)) {
+    users.push({ userId, socketId });
+  }
 };
 
-const getSocketId = (userId) => {
-  return userSocketIdMap.get(userId);
+const removeUser = (socketId) => {
+  users = users.filter((user) => user.socketId !== socketId);
 };
 
-export { storeSocketId, getSocketId };
+const getUser = (userId) => {
+  return users.find((user) => user.userId === userId);
+};
+
+export { addUser, removeUser, getUser, users };
