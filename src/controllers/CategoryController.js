@@ -1,6 +1,8 @@
 import CategoryServices from "../services/CategoryServices.js";
 
 class CategoryController {
+
+  //[POST]] /api/v1/category/addCategory
   async addCategory(req, res, next) {
     try {
       const addCategory = req.body;
@@ -12,6 +14,7 @@ class CategoryController {
     }
   }
 
+  //[GET] /api/v1/category/getCategoryById/:categoryId
   async getCategoryById(req, res, next) {
     try {
       const { categoryId } = req.params;
@@ -23,6 +26,7 @@ class CategoryController {
     }
   }
 
+  //[GET] /api/v1/category/search/:name
   async searchCategoryByName(req, res, next) {
     try {
       const { name } = req.params;
