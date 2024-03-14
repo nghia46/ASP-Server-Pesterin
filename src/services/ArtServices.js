@@ -94,8 +94,6 @@ class ArtServices {
       await feature.save();
 
       const newArtwork = new Art(newArt);
-      // Send notification to followers using NotificationService
-      
       await newArtwork.save();
 
       const artService = new ArtServices();

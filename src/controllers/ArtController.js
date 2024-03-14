@@ -1,8 +1,6 @@
 import ArtServices from "../services/ArtServices.js";
 import NotificationServices from "../services/NotificationServices.js";
-import cron from 'node-cron';
-
-
+import cron from "node-cron";
 
 class ArtController {
   async searchArtwork(req, res, next) {
@@ -20,17 +18,18 @@ class ArtController {
     try {
       const newArt = req.body;
       const newArtwork = await ArtServices.postArt(newArt);
-      if (newArtwork != null){
+      if (newArtwork != null) {
+        await NotificationServices.sendPosntArtworkNotificationToFollowers(
+          newArtwork
+        );
 
-        await NotificationServices.sendPosntArtworkNotificationToFollowers(newArtwork);
-
-        if(newArtwork.isCheckedAds === true){
+        if (newArtwork.isCheckedAds === true) {
           await ArtServices.schedulePostPush(newArtwork);
-          return res.status(200).json({ message: "Post pushed to top successfully" });
+          return res
+            .status(200)
+            .json({ message: "Post pushed to top successfully" });
         }
-
-      }
-      else{
+      } else {
         res.status(500).json({ error: error.message });
       }
       res.status(200).json(newArtwork);
@@ -82,7 +81,7 @@ class ArtController {
     }
   }
 
-  //[POST] /api/v1/post/add-reaction/:artId
+  //[POST] /api/v1/art/add-reaction/:artId
   async addReaction(req, res, next) {
     try {
       const { artId } = req.params;
@@ -95,7 +94,7 @@ class ArtController {
     }
   }
 
-  //[GET] /api/v1/post/get-reaction/:artId/:userId
+  //[GET] /api/v1/art/get-reaction/:artId/:userId
   async getReactionByUserIdAndArtId(req, res, next) {
     try {
       const { artId, userId } = req.params;
@@ -110,7 +109,7 @@ class ArtController {
     }
   }
 
-  //[GET] /api/v1/post/get-reaction-length/:artId/
+  //[GET] /api/v1/art/get-reaction-length/:artId/
   async getReactionLength(req, res) {
     try {
       const { artId } = req.params;
@@ -125,7 +124,7 @@ class ArtController {
     }
   }
 
-  //[GET] /api/v1/post/getArtworkByCategoryId/:categoryId/
+  //[GET] /api/v1/art/getArtworkByCategoryId/:categoryId/
   async getArtworkByCategoryId(req, res) {
     try {
       const { categoryId } = req.params;
@@ -139,41 +138,6 @@ class ArtController {
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
-
-  async pushPostsToTop(req, res, next) {
-    try {
-      
-      var artId = "65e670b1544e601795360c2c";
-
-  //     if (!artId) {
-  //       return res.status(400).json({ message: "ID is required" });
-  //     }
-
-  //     const post = await ArtServices.getAllArtworkById(artId);
-
-  //     if (!post) {
-  //       return res.status(404).json({ message: "Post not found" });
-  //     }
-
-    if (post.isCheckedAds === true) {
-      // Nếu là bài viết cần đẩy lên trên cùng
-      // Gọi hàm đặt lịch cho bài viết
-      
-      await ArtServices.schedulePostPush(post);
-      return res.status(200).json({ message: "Post pushed to top successfully" });
-    } else {
-      // Nếu không phải bài viết cần đẩy lên trên cùng, tiếp tục với vòng lặp
-      return res.status(400).json({ message: "Post is not eligible for push" });
-    }
-  } 
-  catch (error) {
-  console.error("Error pushing posts to top:", error);
-  return res.status(500).json({ error: "Error pushing posts to top" });
-  }
-    }
-
- 
-
 }
 
 export default new ArtController();
