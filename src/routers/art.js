@@ -3,7 +3,7 @@ import artController from "../controllers/ArtController.js";
 const router = express.Router();
 
 router.get("/getArtwork", artController.getAllArtwork);
-router.get("/getAllArtworkBycreatedAt", artController.getAllArtworkCreateAtArt);
+router.get("/getAllArtworkBycreatedAtArt", artController.getAllArtworkCreateAtArt);
 router.get("/getArtworkById/:id", artController.getAllArtworkById);
 router.get("/getArtworkByUserId/:userId", artController.getAllArtworkByUserId);
 router.post("/postArtwork", artController.addArtwork);

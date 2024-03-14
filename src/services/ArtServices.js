@@ -97,13 +97,10 @@ class ArtServices {
 
       const newArtwork = new Art(newArt);
       // Send notification to followers using NotificationService
-      await NotificationService.sendPostArtworkNotificationToFollowers(
-        newArtwork
-      );
+      
       await newArtwork.save();
 
-      const artService = new ArtServices();
-      await artService.schedulePostPush(newArtwork);
+      
 
       return newArtwork;
     } catch (error) {
@@ -271,14 +268,14 @@ class ArtServices {
     }
   }
   
-  async pushPostToTop(post) {
+  async pushPostToTop(artId) {
     try {
         // Cập nhật thuộc tính của bài viết trong cơ sở dữ liệu
         const artService = new ArtServices();
-        artService.updateArtwork(post._id);
-        console.log(`Post pushed to top successfully: ${post._id}`);
+        artService.updateArtwork(artId);
+        console.log(`Post pushed to top successfully: ${artId}`);
     } catch (error) {
-        throw new Error(`Error pushing post to top: ${post._id}`);
+        throw new Error(`Error pushing post to top: ${artId}`);
     }
 }
 
@@ -286,12 +283,11 @@ class ArtServices {
     try {
       const scheduledTasks = {};
       // Kiểm tra xem bài đăng đã được đặt lịch chưa
-      if (!scheduledTasks[post._id]) {
-          const scheduledTime = new Date(post.timestamp);
+      if (!scheduledTasks[post._id]) { 
           const task = cron.schedule(`*/10 * * * * * *`, async () => {
               try {
                 const artService = new ArtServices();
-                  await artService.pushPostToTop(post);
+                  await artService.pushPostToTop(post._id);
                   
               } catch (error) {
                   console.error(error);
@@ -306,7 +302,8 @@ class ArtServices {
             task.stop(); // Dừng công việc lập lịch
             delete scheduledTasks[post._id];
             console.log("Công việc đã được dừng");
-          
+            post.isCheckedAds = false;
+            post.save();
             return "Công việc đã được dừng";
         }, 30 * 1000); // 30 giây
       }
