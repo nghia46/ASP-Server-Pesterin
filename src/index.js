@@ -14,10 +14,11 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin:
-      "https://pesterin.vercel.app/",
+      "https://pesterin.vercel.app",
+    methods: ["GET","POST"]
   },
 });
-const PORT = process.env.PORT || `https://pesterin.vercel.app/`;
+const PORT = process.env.PORT || 5000;
 
 //Config dotenv
 dotenv.config();
