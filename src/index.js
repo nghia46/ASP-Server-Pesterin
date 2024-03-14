@@ -17,7 +17,7 @@ const io = new Server(server, {
       "https://pesterin.vercel.app/",
   },
 });
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || `https://pesterin.vercel.app/`;
 
 //Config dotenv
 dotenv.config();
