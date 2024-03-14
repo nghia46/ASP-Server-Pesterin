@@ -14,7 +14,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin:
-      "https://asp-server-pesterin-production.up.railway.app/",
+      "https://pesterin.vercel.app/",
   },
 });
 const PORT = process.env.PORT || 5000;
