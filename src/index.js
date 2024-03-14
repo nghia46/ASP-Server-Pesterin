@@ -24,7 +24,11 @@ const PORT = process.env.PORT || 5000;
 dotenv.config();
 
 //CORS
-app.use(cors());
+app.use(cors({
+  origin : [
+    "https://asp-server-pesterin-production.up.railway.app"
+  ]
+}));
 
 //Connect to DB
 await db.connect();
