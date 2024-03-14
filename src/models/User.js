@@ -48,10 +48,6 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    saveId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Save",
-    },
     packageId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Package",
