@@ -11,7 +11,6 @@ class SaveService {
           userID,
           arts: [{ artID }],
         });
-        await User.findByIdAndUpdate(userID, { saveId: save._id });
       } else {
         save.arts.push({ artID });
       }
