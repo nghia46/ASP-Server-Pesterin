@@ -6,9 +6,7 @@ import { Feature } from "../models/Feature.js";
 import UserServices from "./UserServices.js";
 import CategoryServices from "./CategoryServices.js";
 import NotificationService from "./NotificationServices.js";
-import ArtController from "../controllers/ArtController.js";
-import cron from 'node-cron';
-
+import cron from "node-cron";
 
 class ArtServices {
   async search(search) {
@@ -96,14 +94,12 @@ class ArtServices {
       await feature.save();
 
       const newArtwork = new Art(newArt);
-      // Send notification to followers using NotificationService
-      await NotificationService.sendPostArtworkNotificationToFollowers(
-        newArtwork
-      );
       await newArtwork.save();
 
       const artService = new ArtServices();
-      await artService.schedulePostPush(newArtwork);
+      if (newArtwork.isCheckedAds) {
+        await artService.schedulePostPush(newArtwork);
+      }
 
       return newArtwork;
     } catch (error) {
@@ -240,17 +236,50 @@ class ArtServices {
     }
   }
 
+  async schedulePostPush(post) {
+    try {
+      const scheduledTasks = {};
+      // Kiểm tra xem bài đăng đã được đặt lịch chưa
+      if (!scheduledTasks[post._id]) {
+        const scheduledTime = new Date(post.timestamp);
+        const task = cron.schedule(`*/10 * * * * * *`, async () => {
+          try {
+            const artService = new ArtServices();
+            await artService.pushPostToTop(post);
+          } catch (error) {
+            console.error(error);
+          }
+        });
+
+        // Lưu trữ công việc lập lịch
+        scheduledTasks[post._id] = task;
+
+        // Dừng công việc lập lịch sau khi đã đủ thời gian
+        setTimeout(() => {
+          task.stop(); // Dừng công việc lập lịch
+          delete scheduledTasks[post._id];
+          console.log("Công việc đã được dừng");
+          post.isCheckedAds = false;
+          post.save();
+          return "Công việc đã được dừng";
+        }, 30 * 1000); // 30 giây
+      }
+    } catch (error) {
+      console.error(`Error scheduling post push: ${post._id}`, error);
+    }
+  }
+
   async updateArtwork(artworkId) {
     try {
       // Tìm bài viết trong cơ sở dữ liệu dựa trên ID
       const artwork = await Art.findById(artworkId);
 
       if (!artwork) {
-        throw new Error('Artwork not found');
+        throw new Error("Artwork not found");
       }
 
       // Cập nhật trường isTop và topTime
-     
+
       artwork.createdAtArt = Date.now() + 7 * 60 * 60 * 1000;
 
       // Lưu thay đổi vào cơ sở dữ liệu
@@ -262,7 +291,7 @@ class ArtServices {
     }
   }
 
-  async getAllArtworkBycreatedAtArt() {
+  async getAllArtworkByCreatedAtArt() {
     try {
       const artWorks = await Art.find({}).sort({ createdAtArt: -1 });
       return artWorks;
@@ -270,51 +299,16 @@ class ArtServices {
       throw error;
     }
   }
-  
+
   async pushPostToTop(post) {
     try {
-        // Cập nhật thuộc tính của bài viết trong cơ sở dữ liệu
-        const artService = new ArtServices();
-        artService.updateArtwork(post._id);
-        console.log(`Post pushed to top successfully: ${post._id}`);
+      // Cập nhật thuộc tính của bài viết trong cơ sở dữ liệu
+      const artService = new ArtServices();
+      artService.updateArtwork(post._id);
+      console.log(`Post pushed to top successfully: ${post._id}`);
     } catch (error) {
-        throw new Error(`Error pushing post to top: ${post._id}`);
+      throw new Error(`Error pushing post to top: ${post._id}`);
     }
-}
-
-  async schedulePostPush(post) {
-    try {
-      const scheduledTasks = {};
-      // Kiểm tra xem bài đăng đã được đặt lịch chưa
-      if (!scheduledTasks[post._id]) {
-          const scheduledTime = new Date(post.timestamp);
-          const task = cron.schedule(`*/10 * * * * * *`, async () => {
-              try {
-                const artService = new ArtServices();
-                  await artService.pushPostToTop(post);
-                  
-              } catch (error) {
-                  console.error(error);
-              }
-          });
-
-          // Lưu trữ công việc lập lịch
-          scheduledTasks[post._id] = task;
-
-          // Dừng công việc lập lịch sau khi đã đủ thời gian
-          setTimeout(() => {
-            task.stop(); // Dừng công việc lập lịch
-            delete scheduledTasks[post._id];
-            console.log("Công việc đã được dừng");
-          
-            return "Công việc đã được dừng";
-        }, 30 * 1000); // 30 giây
-      }
-  } catch (error) {
-      console.error(`Error scheduling post push: ${post._id}`, error);
   }
-}
-
-
 }
 export default new ArtServices();

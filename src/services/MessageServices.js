@@ -4,13 +4,13 @@ import ConversationServices from "./ConversationServices.js";
 class MessageService {
   async newMessage(newMessage) {
     try {
-      const { conversationId, message, senderId } = newMessage;
+      const { conversationId, message, type, senderId } = newMessage;
 
       await Promise.all([
         Message.create(newMessage),
         Conversation.findByIdAndUpdate(
           conversationId,
-          { lastMessage: message },
+          { lastMessage: type === "text" ? message : "image" },
           { new: true }
         ),
       ]);
