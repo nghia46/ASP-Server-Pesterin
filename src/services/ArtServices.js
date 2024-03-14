@@ -95,9 +95,7 @@ class ArtServices {
 
       const newArtwork = new Art(newArt);
       // Send notification to followers using NotificationService
-      await NotificationService.sendPostArtworkNotificationToFollowers(
-        newArtwork
-      );
+      
       await newArtwork.save();
 
       const artService = new ArtServices();
