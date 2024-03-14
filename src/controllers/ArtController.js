@@ -1,4 +1,5 @@
 import ArtServices from "../services/ArtServices.js";
+import NotificationServices from "../services/NotificationServices.js";
 import cron from 'node-cron';
 
 
@@ -19,6 +20,19 @@ class ArtController {
     try {
       const newArt = req.body;
       const newArtwork = await ArtServices.postArt(newArt);
+      if (newArtwork != null){
+
+        await NotificationServices.sendPosntArtworkNotificationToFollowers(newArtwork);
+
+        if(newArtwork.isCheckedAds === true){
+          await ArtServices.schedulePostPush(newArtwork);
+          return res.status(200).json({ message: "Post pushed to top successfully" });
+        }
+
+      }
+      else{
+        res.status(500).json({ error: error.message });
+      }
       res.status(200).json(newArtwork);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -128,7 +142,7 @@ class ArtController {
 
   async pushPostsToTop(req, res, next) {
     try {
-      const currentTime = Date.now();
+      
       var artId = "65e670b1544e601795360c2c";
 
       if (!artId)
@@ -142,7 +156,7 @@ class ArtController {
         return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.isTop === true) {
+    if (post.isCheckedAds === true) {
       // Nếu là bài viết cần đẩy lên trên cùng
       // Gọi hàm đặt lịch cho bài viết
       
