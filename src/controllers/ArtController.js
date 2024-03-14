@@ -1,7 +1,4 @@
 import ArtServices from "../services/ArtServices.js";
-import cron from 'node-cron';
-
-
 
 class ArtController {
   async searchArtwork(req, res, next) {
@@ -38,7 +35,7 @@ class ArtController {
 
   async getAllArtworkCreateAtArt(req, res, next) {
     try {
-      const artWorks = await ArtServices.getAllArtworkBycreatedAtArt();
+      const artWorks = await ArtServices.getAllArtworkByCreatedAtArt();
       res.status(200).json(artWorks);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -126,41 +123,40 @@ class ArtController {
     }
   }
 
-  async pushPostsToTop(req, res, next) {
-    try {
-      const currentTime = Date.now();
-      var artId = "65e670b1544e601795360c2c";
+  // async pushPostsToTop(req, res, next) {
+  //   try {
+  //     const currentTime = Date.now();
+  //     var artId = "65f25654f1e8addf8dd9dce1";
 
-      if (!artId)
-      {
-        return res.status(400).json({ message: "ID is required" });
-      }
+  //     if (!artId) {
+  //       return res.status(400).json({ message: "ID is required" });
+  //     }
 
-      const post = await ArtServices.getAllArtworkById(artId);
+  //     const post = await ArtServices.getAllArtworkById(artId);
 
-      if (!post) {
-        return res.status(404).json({ message: "Post not found" });
-    }
+  //     if (!post) {
+  //       return res.status(404).json({ message: "Post not found" });
+  //     }
 
-    if (post.isTop === true) {
-      // Nếu là bài viết cần đẩy lên trên cùng
-      // Gọi hàm đặt lịch cho bài viết
-      
-      await ArtServices.schedulePostPush(post);
-      return res.status(200).json({ message: "Post pushed to top successfully" });
-    } else {
-      // Nếu không phải bài viết cần đẩy lên trên cùng, tiếp tục với vòng lặp
-      return res.status(400).json({ message: "Post is not eligible for push" });
-    }
-  } 
-  catch (error) {
-  console.error("Error pushing posts to top:", error);
-  return res.status(500).json({ error: "Error pushing posts to top" });
-  }
-    }
+  //     if (post.isCheckedAds === true) {
+  //       // Nếu là bài viết cần đẩy lên trên cùng
+  //       // Gọi hàm đặt lịch cho bài viết
 
- 
-
+  //       await ArtServices.schedulePostPush(post);
+  //       return res
+  //         .status(200)
+  //         .json({ message: "Post pushed to top successfully" });
+  //     } else {
+  //       // Nếu không phải bài viết cần đẩy lên trên cùng, tiếp tục với vòng lặp
+  //       return res
+  //         .status(400)
+  //         .json({ message: "Post is not eligible for push" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error pushing posts to top:", error);
+  //     return res.status(500).json({ error: "Error pushing posts to top" });
+  //   }
+  // }
 }
 
 export default new ArtController();
