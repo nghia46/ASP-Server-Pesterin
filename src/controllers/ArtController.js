@@ -1,11 +1,8 @@
 import ArtServices from "../services/ArtServices.js";
 import NotificationServices from "../services/NotificationServices.js";
-import cron from 'node-cron';
-
-
+import cron from "node-cron";
 
 class ArtController {
-
   //[GET] /api/v1/art/searchArtwork/:search
   async searchArtwork(req, res, next) {
     try {
@@ -24,16 +21,17 @@ class ArtController {
       const newArt = req.body;
       const newArtwork = await ArtServices.postArt(newArt);
       if (newArtwork != null) {
-
-        await NotificationServices.sendPosntArtworkNotificationToFollowers(newArtwork);
+        await NotificationServices.sendPosntArtworkNotificationToFollowers(
+          newArtwork
+        );
 
         if (newArtwork.isCheckedAds === true) {
           await ArtServices.schedulePostPush(newArtwork);
-          return res.status(200).json({ message: "Post pushed to top successfully" });
+          return res
+            .status(200)
+            .json({ message: "Post pushed to top successfully" });
         }
-
-      }
-      else {
+      } else {
         res.status(500).json({ message: "Internal Server Error" });
       }
       res.status(200).json(newArtwork);
@@ -54,10 +52,10 @@ class ArtController {
     }
   }
 
-  //[GET] /api/v1/art/getAllArtworkBycreatedAtArt
+  //[GET] /api/v1/art/getAllArtworkByCreatedAtArt
   async getAllArtworkCreateAtArt(req, res, next) {
     try {
-      const artWorks = await ArtServices.getAllArtworkBycreatedAtArt();
+      const artWorks = await ArtServices.getAllArtworkByCreatedAtArt();
       res.status(200).json(artWorks);
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
@@ -65,7 +63,7 @@ class ArtController {
     }
   }
 
-  //[GET] /api/v1/art/getArtworkById/:id             
+  //[GET] /api/v1/art/getArtworkById/:id
   async getAllArtworkById(req, res, next) {
     try {
       const { id } = req.params;
