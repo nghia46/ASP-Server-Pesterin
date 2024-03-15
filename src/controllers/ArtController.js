@@ -25,7 +25,7 @@ class ArtController {
       const newArtwork = await ArtServices.postArt(newArt);
       if (newArtwork != null) {
 
-        await NotificationServices.sendPosntArtworkNotificationToFollowers(newArtwork);
+        await NotificationServices.sendPostArtworkNotificationToFollowers(newArtwork);
 
         if (newArtwork.isCheckedAds === true) {
           await ArtServices.schedulePostPush(newArtwork);
@@ -57,7 +57,7 @@ class ArtController {
   //[GET] /api/v1/art/getAllArtworkBycreatedAtArt
   async getAllArtworkCreateAtArt(req, res, next) {
     try {
-      const artWorks = await ArtServices.getAllArtworkBycreatedAtArt();
+      const artWorks = await ArtServices.getAllArtworkByCreatedAtArt();
       res.status(200).json(artWorks);
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
