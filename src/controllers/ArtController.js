@@ -55,7 +55,7 @@ class ArtController {
   async getAllArtworkCreateAtArt(req, res, next) {
     try {
       const artWorks = await ArtServices.getAllArtworkByCreatedAtArt();
-      
+
       res.status(200).json(artWorks);
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
@@ -142,6 +142,21 @@ class ArtController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  //[POST] /api/v1/art//editArtwork/:id
+  async editArtwork(req, res, next) {
+    try {
+      const { artId } = req.params;
+      const artUpdate = req.body;
+
+      const artUpdated = await ArtServices.updateArtworkById(artId, artUpdate);
+
+      res.status(200).json(artUpdated);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+      next();
     }
   }
 }

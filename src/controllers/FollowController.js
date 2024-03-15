@@ -3,16 +3,16 @@ import FollowService from "../services/FollowServices.js";
 class FollowController {
   async create(req, res) {
     try {
-      // Lấy dữ liệu từ params của request
+      // Get data from request params
       const { followerId, followingId } = req.params;
 
-      // Gọi service để tạo một bản ghi mới
+      // Call service to create a new record
       const newFollow = await FollowService.create(followerId, followingId);
 
-      // Trả về kết quả cho client
-      return res.status(201).json(newFollow);
+      // Return results to the client
+      return res.status(200).json(newFollow);
     } catch (error) {
-      // Xử lý lỗi và trả về lỗi cho client
+      // Handle errors and return errors to the client
       return res.status(500).json({ success: false, error: error.message });
     }
   }
@@ -22,7 +22,7 @@ class FollowController {
       const { followingId } = req.params;
 
       const listFollower = await FollowService.getFollower(followingId);
-      return res.status(201).json(listFollower);
+      return res.status(200).json(listFollower);
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
     }
@@ -33,7 +33,7 @@ class FollowController {
       const { followerId } = req.params;
 
       const listFollowing = await FollowService.getFollowing(followerId);
-      return res.status(201).json(listFollowing);
+      return res.status(200).json(listFollowing);
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
     }
@@ -43,13 +43,13 @@ class FollowController {
     try {
       const { followerId, followingId } = req.params;
 
-      // Gọi service để xóa bản ghi theo followerId và followingId
+      // Call service to delete records by followerId and followingId
       const result = await FollowService.deleteFollow(followerId, followingId);
 
-      // Trả về kết quả cho client
+      // Return results to the client
       return res.status(200).json({ success: true, message: result.message });
     } catch (error) {
-      // Xử lý lỗi và trả về lỗi cho client
+      // Handle errors and return errors to the client
       return res.status(500).json({ success: false, error: error.message });
     }
   }
