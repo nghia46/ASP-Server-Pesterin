@@ -145,7 +145,7 @@ class ArtController {
     }
   }
 
-  //[POST] /api/v1/art//editArtwork/:id
+  //[POST] /api/v1/art/editArtwork/:id
   async editArtwork(req, res, next) {
     try {
       const { artId } = req.params;

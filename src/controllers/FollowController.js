@@ -1,6 +1,8 @@
 import FollowService from "../services/FollowServices.js";
 
 class FollowController {
+
+  //[POST] /api/v1/art/follow/createFollow/:followerId/:followingId
   async create(req, res) {
     try {
       // Get data from request params
@@ -17,6 +19,7 @@ class FollowController {
     }
   }
 
+  //[GET] /api/v1/art/getFollower/:followingId
   async getFollower(req, res) {
     try {
       const { followingId } = req.params;
@@ -28,6 +31,7 @@ class FollowController {
     }
   }
 
+  //[GET] /api/v1/art/getFollowing/:followerId
   async getFollowing(req, res) {
     try {
       const { followerId } = req.params;
@@ -39,6 +43,7 @@ class FollowController {
     }
   }
 
+  //[DELETE] /api/v1/art/deleteFollow/:followerId/:followingId
   async deleteFollow(req, res) {
     try {
       const { followerId, followingId } = req.params;
