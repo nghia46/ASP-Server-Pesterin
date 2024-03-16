@@ -347,5 +347,25 @@ class ArtServices {
       throw new Error(`Error pushing post to top: ${post._id}`);
     }
   }
+
+  async updateArtworkById(artId, artUpdate) {
+    try {
+      const art = await Art.findOne({ artId });
+      if (!art) {
+        throw new Error("Art not found");
+      }
+      art.categoryId = artUpdate.categoryId;
+      art.access = artUpdate.access;
+      art.title = artUpdate.title;
+      art.description = artUpdate.description;
+
+      const newArt = new Art(art);
+
+      await newArt.save();
+      return newArt;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 export default new ArtServices();

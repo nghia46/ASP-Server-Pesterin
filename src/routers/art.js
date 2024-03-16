@@ -24,5 +24,6 @@ router.get(
   artController.getArtworkByCategoryId
 );
 router.post("/updateArtworkStatus", artController.updateArtworkStatus);
+router.post("/editArtwork/:id", artController.editArtwork);
 
 export default router;
