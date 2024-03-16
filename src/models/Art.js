@@ -63,9 +63,9 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isTop: {
-      type: Boolean,
-      default: false,
+    countReport: {
+      type: Number,
+      default: 0,
     },
   },
   {

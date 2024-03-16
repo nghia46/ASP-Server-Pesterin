@@ -11,11 +11,10 @@ class ReportController {
       next();
     }
   }
-
   async getListReport(req, res) {
     try {
       const reportList = await reportService.getListReport();
-      return res.status(200).json({ success: true, data: reportList });
+      return res.status(200).json(reportList);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

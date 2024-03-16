@@ -52,6 +52,17 @@ class ArtController {
     }
   }
 
+  //[GET] /api/v1/art/getArtworkV2
+  async getAllArtworkV2(req, res, next) {
+    try {
+      const artWorks = await ArtServices.getAllArtworkV2();
+      res.status(200).json(artWorks);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      next();
+    }
+  }
+
   //[GET] /api/v1/art/getAllArtworkByCreatedAtArt
   async getAllArtworkCreateAtArt(req, res, next) {
     try {
@@ -68,6 +79,18 @@ class ArtController {
     try {
       const { id } = req.params;
       const artWork = await ArtServices.getAllArtworkById(id);
+      res.status(200).json(artWork);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      next();
+    }
+  }
+
+  //[GET] /api/v1/art/getArtworkByIdV2/:id
+  async getAllArtworkById_V2(req, res, next) {
+    try {
+      const { id } = req.params;
+      const artWork = await ArtServices.getAllArtworkById_V2(id);
       res.status(200).json(artWork);
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
@@ -142,6 +165,18 @@ class ArtController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  //[POST] /api/v1/art/updateArtworkStatus
+  async updateArtworkStatus(req, res, next) {
+    try {
+      const art = req.body;
+      const artWork = await ArtServices.updateArtworkStatus(art);
+      res.status(200).json(artWork);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      next();
     }
   }
 }

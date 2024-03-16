@@ -192,6 +192,59 @@ class NotificationService {
     }
   }
 
+  async sendReportAdminNotification(reportData) {
+    try {
+      const receiver = await User.findOne({ type: "Admin" });
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const art = await Art.findOne({ _id: reportData.artID });
+      const sender = await User.findOne({ _id: reportData.userID });
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: sender._id,
+        senderAvatar: sender.avatar,
+        type: `new_report_artwork`,
+        content: `<span style="font-weight: 600">${sender.userName}</span> has just submitted a report regarding the <span style="font-weight: 600">${art.title}</span> artwork with content report <span style="font-weight: 600">${reportData.reportTitle}</span>`,
+        hyperLink: "/admin/report",
+      };
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
+  async sendUnlockArtworkNotification(art) {
+    try {
+      const receiver = await User.findOne({ _id: art.creator_id });
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const artResponse = await Art.findOne({ _id: art.key });
+      const sender = await User.findOne({ type: "Admin" });
+      console.log(artResponse);
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: sender._id,
+        senderAvatar: sender.avatar,
+        type: `new_unlock_artwork`,
+        content: `Dear <span style="font-weight: 600">${
+          receiver.userName
+            ? receiver.userName
+            : receiver.firstName + " " + receiver.lastName
+        } </span>, your art has been unlocked by the admin. Please ensure careful consideration of art content for future posts to maintain community guidelines. Thank you.`,
+        hyperLink: `/pin/${artResponse._id}`,
+      };
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+    } catch (error) {
+      console.error("Error sending notification to followers:", error);
+    }
+  }
+
   async sendPaymentUpgradePackageNotification(userId, type, amount) {
     try {
       const receiver = await User.findById(userId);

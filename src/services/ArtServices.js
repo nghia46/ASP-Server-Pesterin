@@ -117,7 +117,26 @@ class ArtServices {
     }
   }
 
+  async getAllArtworkV2() {
+    try {
+      const artWorks = await Art.find({ status: false });
+      const sortedArtworks = artWorks.sort((a, b) => b.createdAt - a.createdAt);
+      return sortedArtworks;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAllArtworkById(id) {
+    try {
+      const artWork = await Art.findOne({ _id: id, status: true });
+      return artWork;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllArtworkById_V2(id) {
     try {
       const artWork = await Art.findOne({ _id: id });
       return artWork;
@@ -291,9 +310,27 @@ class ArtServices {
     }
   }
 
+  async updateArtworkStatus(art) {
+    try {
+      const artwork = await Art.findById({ _id: art.key });
+      if (!artwork) {
+        throw new Error("Artwork not found");
+      }
+      artwork.status = true;
+      artwork.countReport = 0;
+      await artwork.save();
+      await NotificationService.sendUnlockArtworkNotification(art);
+      return artwork;
+    } catch (error) {
+      throw new Error(`Error updating artwork: ${error.message}`);
+    }
+  }
+
   async getAllArtworkByCreatedAtArt() {
     try {
-      const artWorks = await Art.find({}).sort({ createdAtArt: -1 });
+      const artWorks = await Art.find({ status: true }).sort({
+        createdAtArt: -1,
+      });
       return artWorks;
     } catch (error) {
       throw error;
