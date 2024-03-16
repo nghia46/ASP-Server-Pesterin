@@ -45,5 +45,28 @@ class ReportService {
       throw err;
     }
   }
+  async sendWarning(report) {
+    try {
+      let typeWarning;
+      const reportSave = await Report.findOne({ _id: report.key });
+      const art = await Art.findOne({ _id: report.art_id });
+      if (art.countReport < 5) {
+        art.countReport += 1;
+        typeWarning = "warning";
+      }
+      if (art.countReport >= 5) {
+        art.status = false;
+        typeWarning = "lock";
+      }
+      reportSave.reportStatus = false;
+      await reportSave.save();
+      await art.save();
+      await NotificationServices.sendWarningNotification(report, typeWarning);
+      return reportSave;
+    } catch (err) {
+      throw err;
+    }
+  }
+
 }
 export default new ReportService();

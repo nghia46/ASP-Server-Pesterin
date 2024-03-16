@@ -215,6 +215,44 @@ class NotificationService {
       throw error;
     }
   }
+ 
+  async sendWarningNotification(report, typeWarning) {
+    try {
+      const receiver = await User.findOne({ _id: report.creator_id });
+      if (!receiver) {
+        console.error("Receiver not found");
+        return;
+      }
+      const art = await Art.findOne({ _id: report.art_id });
+      const sender = await User.findOne({ type: "Admin" });
+      const notificationData = {
+        receiverId: receiver._id,
+        senderId: sender._id,
+        senderAvatar: sender.avatar,
+        type: new_warning_artwork,
+        content:
+          typeWarning === "warning"
+            ? `Dear <span style="font-weight: 600">${
+                receiver.userName
+                  ? receiver.userName
+                  : receiver.firstName + " " + receiver.lastName
+              } </span>, we regret to inform you that your artwork has been reported. Please review the content to ensure compliance with our community guidelines.`
+            : `Dear <span style="font-weight: 600">${
+                receiver.userName
+                  ? receiver.userName
+                  : receiver.firstName + " " + receiver.lastName
+              } </span>, we regret to inform you that your artwork has been locked due to multiple reports. Please contact our administration team to address any concerns before it can be reinstated.`,
+        hyperLink: typeWarning === "warning" ? `/pin/${art._id}` : "",
+      };
+      
+
+      // Save notification to Notification table
+      await this.saveNotification(notificationData);
+      
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async sendUnlockArtworkNotification(art) {
     try {
