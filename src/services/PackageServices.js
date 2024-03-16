@@ -67,6 +67,40 @@ class PackageService {
       throw error;
     }
   }
+
+  async getPackageName(id) {
+    try {
+      const packageResult = await Package.findById(id);
+      return packageResult.name;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFeatureByUserId(userId) {
+    try {
+      const featureResponse = await Feature.findOne({ userId: userId });
+      return featureResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async decreaseDownloadCount(userId, packageId) {
+    try {
+      const feature = await Feature.findOne({ userId, packageId });
+      if (!feature) {
+        throw new Error("Feature not found");
+      }
+      if (feature.countDownload > 0) {
+        feature.countDownload -= 1;
+      }
+      await feature.save();
+      return feature;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new PackageService();
