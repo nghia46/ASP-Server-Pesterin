@@ -88,10 +88,10 @@ class ArtController {
   }
 
   //[GET] /api/v1/art/getArtworkByIdV2/:id
-  async getAllArtworkById_V2(req, res, next) {
+  async getAllArtworkByIdV2(req, res, next) {
     try {
       const { id } = req.params;
-      const artWork = await ArtServices.getAllArtworkById_V2(id);
+      const artWork = await ArtServices.getAllArtworkByIdV2(id);
       res.status(200).json(artWork);
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });

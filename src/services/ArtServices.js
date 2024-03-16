@@ -136,7 +136,7 @@ class ArtServices {
     }
   }
 
-  async getAllArtworkById_V2(id) {
+  async getAllArtworkByIdV2(id) {
     try {
       const artWork = await Art.findOne({ _id: id });
       return artWork;

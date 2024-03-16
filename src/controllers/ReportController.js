@@ -31,6 +31,7 @@ class ReportController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  
   //[PUT] /api/v1/report/:reportID
   async updateReportStatus(req, res) {
     try {

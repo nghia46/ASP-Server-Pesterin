@@ -30,7 +30,7 @@ class NotificationService {
         await this.saveNotification(notificationData);
       });
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -59,7 +59,7 @@ class NotificationService {
       // // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -83,7 +83,7 @@ class NotificationService {
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -111,7 +111,7 @@ class NotificationService {
       // // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -138,7 +138,7 @@ class NotificationService {
         await this.saveNotification(notificationData);
       }
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -164,7 +164,7 @@ class NotificationService {
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -188,7 +188,7 @@ class NotificationService {
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -212,7 +212,7 @@ class NotificationService {
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -236,12 +236,12 @@ class NotificationService {
             ? receiver.userName
             : receiver.firstName + " " + receiver.lastName
         } </span>, your art has been unlocked by the admin. Please ensure careful consideration of art content for future posts to maintain community guidelines. Thank you.`,
-        hyperLink: `/pin/${artResponse._id}`,
+        hyperLink: `/art/${artResponse_id}`,
       };
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -267,7 +267,7 @@ class NotificationService {
       // Save notification to Notification table
       await this.saveNotification(notificationData);
     } catch (error) {
-      console.error("Error sending notification to followers:", error);
+      throw error;
     }
   }
 
@@ -276,7 +276,7 @@ class NotificationService {
       const notification = new Notification(notificationData);
       await notification.save();
     } catch (error) {
-      console.error("Error saving notification:", error);
+      throw error;
     }
   }
 
@@ -287,7 +287,7 @@ class NotificationService {
       }).sort({ createdAt: -1 });
       return notifications;
     } catch (error) {
-      console.error("Error saving notification:", error);
+      throw error;
     }
   }
 
@@ -299,7 +299,7 @@ class NotificationService {
       });
       return notifications;
     } catch (error) {
-      console.error("Error saving notification:", error);
+      throw error;
     }
   }
 
@@ -317,7 +317,7 @@ class NotificationService {
 
       return updatedNotifications;
     } catch (error) {
-      console.error("Error saving notification:", error);
+      throw error;
     }
   }
 
@@ -339,7 +339,7 @@ class NotificationService {
 
       return updatedNotifications;
     } catch (error) {
-      console.error("Error saving notification:", error);
+      throw error;
     }
   }
 }
