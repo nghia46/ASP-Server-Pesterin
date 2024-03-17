@@ -50,12 +50,13 @@ io.on("connection", (socket) => {
   });
 
   //Send message
-  socket.on("sendMessage", ({ senderId, receiverId, message }) => {
+  socket.on("sendMessage", ({ senderId, receiverId, type, message }) => {
     const user = getUser(receiverId);
     if (user && user.socketId) {
       io.to(user.socketId).emit("getMessage", {
         senderId,
         message,
+        type,
       });
     }
   });

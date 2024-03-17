@@ -6,9 +6,7 @@ import { Feature } from "../models/Feature.js";
 import UserServices from "./UserServices.js";
 import CategoryServices from "./CategoryServices.js";
 import NotificationService from "./NotificationServices.js";
-import ArtController from "../controllers/ArtController.js";
-import cron from 'node-cron';
-
+import cron from "node-cron";
 
 class ArtServices {
   async search(search) {
@@ -96,14 +94,12 @@ class ArtServices {
       await feature.save();
 
       const newArtwork = new Art(newArt);
-      // Send notification to followers using NotificationService
-      await NotificationService.sendPostArtworkNotificationToFollowers(
-        newArtwork
-      );
       await newArtwork.save();
 
       const artService = new ArtServices();
-      await artService.schedulePostPush(newArtwork);
+      if (newArtwork.isCheckedAds) {
+        await artService.schedulePostPush(newArtwork);
+      }
 
       return newArtwork;
     } catch (error) {
@@ -121,7 +117,26 @@ class ArtServices {
     }
   }
 
+  async getAllArtworkV2() {
+    try {
+      const artWorks = await Art.find({ status: false });
+      const sortedArtworks = artWorks.sort((a, b) => b.createdAt - a.createdAt);
+      return sortedArtworks;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAllArtworkById(id) {
+    try {
+      const artWork = await Art.findOne({ _id: id, status: true });
+      return artWork;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllArtworkByIdV2(id) {
     try {
       const artWork = await Art.findOne({ _id: id });
       return artWork;
@@ -240,17 +255,50 @@ class ArtServices {
     }
   }
 
+  async schedulePostPush(post) {
+    try {
+      const scheduledTasks = {};
+      // Kiểm tra xem bài đăng đã được đặt lịch chưa
+      if (!scheduledTasks[post._id]) {
+        const scheduledTime = new Date(post.timestamp);
+        const task = cron.schedule(`*/10 * * * * * *`, async () => {
+          try {
+            const artService = new ArtServices();
+            await artService.pushPostToTop(post);
+          } catch (error) {
+            console.error(error);
+          }
+        });
+
+        // Lưu trữ công việc lập lịch
+        scheduledTasks[post._id] = task;
+
+        // Dừng công việc lập lịch sau khi đã đủ thời gian
+        setTimeout(() => {
+          task.stop(); // Dừng công việc lập lịch
+          delete scheduledTasks[post._id];
+          console.log("Công việc đã được dừng");
+          post.isCheckedAds = false;
+          post.save();
+          return "Công việc đã được dừng";
+        }, 30 * 1000); // 30 giây
+      }
+    } catch (error) {
+      console.error(`Error scheduling post push: ${post._id}`, error);
+    }
+  }
+
   async updateArtwork(artworkId) {
     try {
       // Tìm bài viết trong cơ sở dữ liệu dựa trên ID
       const artwork = await Art.findById(artworkId);
 
       if (!artwork) {
-        throw new Error('Artwork not found');
+        throw new Error("Artwork not found");
       }
 
       // Cập nhật trường isTop và topTime
-     
+
       artwork.createdAtArt = Date.now() + 7 * 60 * 60 * 1000;
 
       // Lưu thay đổi vào cơ sở dữ liệu
@@ -262,59 +310,64 @@ class ArtServices {
     }
   }
 
-  async getAllArtworkBycreatedAtArt() {
+  async updateArtworkStatus(art) {
     try {
-      const artWorks = await Art.find({}).sort({ createdAtArt: -1 });
+      const artwork = await Art.findById({ _id: art.key });
+      if (!artwork) {
+        throw new Error("Artwork not found");
+      }
+      artwork.status = true;
+      artwork.countReport = 0;
+      await artwork.save();
+      await NotificationService.sendUnlockArtworkNotification(art);
+      return artwork;
+    } catch (error) {
+      throw new Error(`Error updating artwork: ${error.message}`);
+    }
+  }
+
+  async getAllArtworkByCreatedAtArt() {
+    try {
+      const artWorks = await Art.find({ status: true }).sort({
+        createdAtArt: -1,
+      });
       return artWorks;
     } catch (error) {
       throw error;
     }
   }
-  
+
   async pushPostToTop(post) {
     try {
-        // Cập nhật thuộc tính của bài viết trong cơ sở dữ liệu
-        const artService = new ArtServices();
-        artService.updateArtwork(post._id);
-        console.log(`Post pushed to top successfully: ${post._id}`);
+      // Cập nhật thuộc tính của bài viết trong cơ sở dữ liệu
+      const artService = new ArtServices();
+      artService.updateArtwork(post._id);
+      console.log(`Post pushed to top successfully: ${post._id}`);
     } catch (error) {
-        throw new Error(`Error pushing post to top: ${post._id}`);
+      throw new Error(`Error pushing post to top: ${post._id}`);
     }
-}
-
-  async schedulePostPush(post) {
-    try {
-      const scheduledTasks = {};
-      // Kiểm tra xem bài đăng đã được đặt lịch chưa
-      if (!scheduledTasks[post._id]) {
-          const scheduledTime = new Date(post.timestamp);
-          const task = cron.schedule(`*/10 * * * * * *`, async () => {
-              try {
-                const artService = new ArtServices();
-                  await artService.pushPostToTop(post);
-                  
-              } catch (error) {
-                  console.error(error);
-              }
-          });
-
-          // Lưu trữ công việc lập lịch
-          scheduledTasks[post._id] = task;
-
-          // Dừng công việc lập lịch sau khi đã đủ thời gian
-          setTimeout(() => {
-            task.stop(); // Dừng công việc lập lịch
-            delete scheduledTasks[post._id];
-            console.log("Công việc đã được dừng");
-          
-            return "Công việc đã được dừng";
-        }, 30 * 1000); // 30 giây
-      }
-  } catch (error) {
-      console.error(`Error scheduling post push: ${post._id}`, error);
   }
-}
 
+  async updateArtworkById(artId, artUpdate) {
+    try {
+      const art = await Art.findOne({ artId });
+      if (!art) {
+        throw new Error("Art not found");
+      }
+      art.access = artUpdate.access;
+      art.description = artUpdate.description;
+      art.isCheckedComment = artUpdate.isCheckedComment;
+      art.isCheckedSimilar = artUpdate.isCheckedSimilar;
+      art.link = artUpdate.link;
+      art.title = artUpdate.title;
 
+      const newArt = new Art(art);
+
+      await newArt.save();
+      return newArt;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 export default new ArtServices();

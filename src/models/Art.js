@@ -37,7 +37,7 @@ const schema = new mongoose.Schema(
     },
     createdAtArt: {
       type: Date,
-      default: "",
+      default: Date.now(),
     },
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -63,9 +63,9 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isTop : {
-      type: Boolean,
-      default: false,
+    countReport: {
+      type: Number,
+      default: 0,
     },
   },
   {
